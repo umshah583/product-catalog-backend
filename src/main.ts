@@ -7,20 +7,27 @@ async function bootstrap() {
 
   const corsOrigin = process.env.CORS_ORIGIN || '*';
 
-  const corsAllowedHeaders = (
-    process.env.CORS_ALLOWED_HEADERS ||
-    'Content-Type,Authorization,X-Tenant-Slug,Accept'
-  )
-    .split(',')
-    .map((header) => header.trim());
-
   app.enableCors({
     origin:
       corsOrigin === '*'
         ? '*'
-        : corsOrigin.split(',').map((origin) => origin.trim()),
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: corsAllowedHeaders,
+        : corsOrigin
+            .split(',')
+            .map((origin) => origin.trim()),
+
+    methods: [
+      'GET',
+      'POST',
+      'PUT',
+      'PATCH',
+      'DELETE',
+      'OPTIONS',
+    ],
+
+    // Allows x-tenant-slug and other custom headers
+    allowedHeaders: '*',
+
+    credentials: false,
   });
 
   app.useGlobalPipes(
@@ -31,7 +38,10 @@ async function bootstrap() {
     }),
   );
 
-  await app.listen(process.env.PORT ?? 3001, '0.0.0.0');
+  await app.listen(
+    process.env.PORT ?? 3001,
+    '0.0.0.0',
+  );
 }
 
 bootstrap();

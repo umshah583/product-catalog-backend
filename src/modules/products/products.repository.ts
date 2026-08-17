@@ -6,12 +6,15 @@ import { PrismaService } from '../../common/prisma/prisma.service.js';
 export class ProductsRepository {
   constructor(private prisma: PrismaService) {}
 
-  async findAll(tenantId: string, params?: {
-    skip?: number;
-    take?: number;
-    where?: Prisma.ProductWhereInput;
-    orderBy?: Prisma.ProductOrderByWithRelationInput;
-  }): Promise<any[]> {
+  async findAll(
+    tenantId: string,
+    params?: {
+      skip?: number;
+      take?: number;
+      where?: Prisma.ProductWhereInput;
+      orderBy?: Prisma.ProductOrderByWithRelationInput;
+    },
+  ): Promise<any[]> {
     const products = await this.prisma.product.findMany({
       ...params,
       where: {
@@ -20,16 +23,18 @@ export class ProductsRepository {
         isActive: true,
       },
     });
-    
-    // Convert Decimal to string for JSON serialization
-    return products.map(p => ({
+
+    return products.map((p) => ({
       ...p,
       price: p.price.toString(),
       discountPrice: p.discountPrice?.toString(),
     }));
   }
 
-  async findOne(tenantId: string, id: string): Promise<any | null> {
+  async findOne(
+    tenantId: string,
+    id: string,
+  ): Promise<any | null> {
     const product = await this.prisma.product.findFirst({
       where: {
         id,
@@ -37,10 +42,9 @@ export class ProductsRepository {
         isActive: true,
       },
     });
-    
+
     if (!product) return null;
-    
-    // Convert Decimal to string for JSON serialization
+
     return {
       ...product,
       price: product.price.toString(),
@@ -48,7 +52,10 @@ export class ProductsRepository {
     };
   }
 
-  async findBySlug(tenantId: string, slug: string): Promise<any | null> {
+  async findBySlug(
+    tenantId: string,
+    slug: string,
+  ): Promise<any | null> {
     const product = await this.prisma.product.findFirst({
       where: {
         slug,
@@ -56,10 +63,9 @@ export class ProductsRepository {
         isActive: true,
       },
     });
-    
+
     if (!product) return null;
-    
-    // Convert Decimal to string for JSON serialization
+
     return {
       ...product,
       price: product.price.toString(),
@@ -67,7 +73,10 @@ export class ProductsRepository {
     };
   }
 
-  async findByCategory(tenantId: string, categoryId: string): Promise<any[]> {
+  async findByCategory(
+    tenantId: string,
+    categoryId: string,
+  ): Promise<any[]> {
     const products = await this.prisma.product.findMany({
       where: {
         categoryId,
@@ -75,16 +84,17 @@ export class ProductsRepository {
         isActive: true,
       },
     });
-    
-    // Convert Decimal to string for JSON serialization
-    return products.map(p => ({
+
+    return products.map((p) => ({
       ...p,
       price: p.price.toString(),
       discountPrice: p.discountPrice?.toString(),
     }));
   }
 
-  async findFeatured(tenantId: string): Promise<any[]> {
+  async findFeatured(
+    tenantId: string,
+  ): Promise<any[]> {
     const products = await this.prisma.product.findMany({
       where: {
         tenantId,
@@ -95,24 +105,96 @@ export class ProductsRepository {
         createdAt: 'desc',
       },
     });
-    
-    // Convert Decimal to string for JSON serialization
-    return products.map(p => ({
+
+    return products.map((p) => ({
       ...p,
       price: p.price.toString(),
       discountPrice: p.discountPrice?.toString(),
     }));
   }
 
-  async create(tenantId: string, data: Prisma.ProductUncheckedCreateInput): Promise<any> {
+  /**
+   * Convert product name into a URL-friendly slug.
+   *
+   * Example:
+   * "True wireless headphones"
+   * becomes:
+   * "true-wireless-headphones"
+   */
+  private generateSlug(value: string): string {
+    return value
+      .toString()
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '');
+  }
+
+  /**
+   * Generate a unique slug for the tenant.
+   *
+   * Example:
+   * true-wireless-headphones
+   * true-wireless-headphones-2
+   * true-wireless-headphones-3
+   */
+  private async generateUniqueSlug(
+    tenantId: string,
+    name: string,
+    providedSlug?: string,
+  ): Promise<string> {
+    const baseSlug =
+      providedSlug?.trim()
+        ? this.generateSlug(providedSlug)
+        : this.generateSlug(name);
+
+    let slug = baseSlug;
+    let counter = 1;
+
+    while (
+      await this.prisma.product.findFirst({
+        where: {
+          tenantId,
+          slug,
+        },
+        select: {
+          id: true,
+        },
+      })
+    ) {
+      counter++;
+      slug = `${baseSlug}-${counter}`;
+    }
+
+    return slug;
+  }
+
+  async create(
+    tenantId: string,
+    data: Prisma.ProductUncheckedCreateInput,
+  ): Promise<any> {
+    // Always use the server's tenant ID.
+    // Do not trust tenantId coming from the frontend.
+    const productData = {
+      ...data,
+      tenantId,
+    };
+
+    // Generate slug automatically if frontend doesn't provide one.
+    const slug = await this.generateUniqueSlug(
+      tenantId,
+      productData.name,
+      productData.slug,
+    );
+
     const product = await this.prisma.product.create({
       data: {
-        ...data,
+        ...productData,
+        slug,
         tenantId,
       },
     });
-    
-    // Convert Decimal to string for JSON serialization
+
     return {
       ...product,
       price: product.price.toString(),
@@ -120,7 +202,11 @@ export class ProductsRepository {
     };
   }
 
-  async update(tenantId: string, id: string, data: Prisma.ProductUpdateInput): Promise<any> {
+  async update(
+    tenantId: string,
+    id: string,
+    data: Prisma.ProductUpdateInput,
+  ): Promise<any> {
     const product = await this.prisma.product.update({
       where: {
         id,
@@ -128,8 +214,7 @@ export class ProductsRepository {
       },
       data,
     });
-    
-    // Convert Decimal to string for JSON serialization
+
     return {
       ...product,
       price: product.price.toString(),
@@ -137,7 +222,10 @@ export class ProductsRepository {
     };
   }
 
-  async softDelete(tenantId: string, id: string): Promise<Product> {
+  async softDelete(
+    tenantId: string,
+    id: string,
+  ): Promise<Product> {
     return this.prisma.product.update({
       where: {
         id,
@@ -149,7 +237,10 @@ export class ProductsRepository {
     });
   }
 
-  async delete(tenantId: string, id: string): Promise<Product> {
+  async delete(
+    tenantId: string,
+    id: string,
+  ): Promise<Product> {
     return this.prisma.product.delete({
       where: {
         id,
@@ -158,7 +249,10 @@ export class ProductsRepository {
     });
   }
 
-  async count(tenantId: string, where?: Prisma.ProductWhereInput): Promise<number> {
+  async count(
+    tenantId: string,
+    where?: Prisma.ProductWhereInput,
+  ): Promise<number> {
     return this.prisma.product.count({
       where: {
         ...where,
