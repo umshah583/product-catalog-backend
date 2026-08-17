@@ -7,13 +7,20 @@ async function bootstrap() {
 
   const corsOrigin = process.env.CORS_ORIGIN || '*';
 
+  const corsAllowedHeaders = (
+    process.env.CORS_ALLOWED_HEADERS ||
+    'Content-Type,Authorization,X-Tenant-Slug,Accept'
+  )
+    .split(',')
+    .map((header) => header.trim());
+
   app.enableCors({
     origin:
       corsOrigin === '*'
         ? '*'
         : corsOrigin.split(',').map((origin) => origin.trim()),
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
+    allowedHeaders: corsAllowedHeaders,
   });
 
   app.useGlobalPipes(
