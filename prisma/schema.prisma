@@ -1,0 +1,185 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// Multi-tenant support
+model Tenant {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  users       User[]
+  products    Product[]
+  categories  Category[]
+  settings    Settings?
+  promotionalOffers PromotionalOffer[]
+
+  @@index([slug])
+  @@index([isActive])
+}
+
+// Authentication
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  password      String
+  firstName     String?
+  lastName      String?
+  role          UserRole  @default(USER)
+  tenantId      String
+  isActive      Boolean   @default(true)
+  refreshToken String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  tenant        Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([email])
+  @@index([tenantId])
+  @@index([role])
+}
+
+enum UserRole {
+  ADMIN
+  USER
+}
+
+// Settings for dynamic company config
+model Settings {
+  id              String   @id @default(cuid())
+  tenantId        String   @unique
+  companyName     String
+  catalogTitle    String?
+  whatsappNumber  String?
+  phoneNumber     String?
+  contactEmail    String?
+  currency        String   @default("USD")
+  currencySymbol  String   @default("$")
+  address         String?
+  workingHours    String?
+  aboutCompany    String?
+  whatsappEnabled Boolean  @default(false)
+  logoUrl         String?
+  primaryColor    String?
+  secondaryColor  String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  tenant          Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+}
+
+// Categories
+model Category {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String
+  description String?
+  imageUrl    String?
+  sortOrder   Int      @default(0)
+  tenantId    String
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  tenant      Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  products    Product[]
+
+  @@unique([tenantId, slug])
+  @@index([tenantId])
+  @@index([sortOrder])
+  @@index([isActive])
+}
+
+// Products
+model Product {
+  id              String           @id @default(cuid())
+  name            String
+  sku             String
+  slug            String
+  categoryId      String
+  categoryName    String
+  brand           String?
+  description     String?
+  price           Decimal          @db.Decimal(10, 2)
+  discountPrice   Decimal?         @db.Decimal(10, 2)
+  currency        String           @default("USD")
+  stockStatus     StockStatus      @default(IN_STOCK)
+  images          String[]
+  specifications  Json?
+  featured        Boolean          @default(false)
+  isActive        Boolean          @default(true)
+  tenantId        String
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  tenant          Tenant           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  category        Category         @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  promotionalOffers PromotionalOffer[]
+
+  @@unique([tenantId, sku])
+  @@unique([tenantId, slug])
+  @@index([tenantId])
+  @@index([categoryId])
+  @@index([stockStatus])
+  @@index([featured])
+  @@index([isActive])
+}
+
+// Promotional Offers
+model PromotionalOffer {
+  id              String              @id @default(cuid())
+  name            String
+  description     String?
+  offerType       OfferType
+  buyQuantity     Int?                // For BUY_X_GET_Y_FREE offers
+  getQuantity     Int?                // For BUY_X_GET_Y_FREE offers
+  discountPercent Int?                // For PERCENTAGE_DISCOUNT offers
+  discountAmount  Decimal?            @db.Decimal(10, 2) // For FLAT_DISCOUNT offers
+  applicableTo    ApplicableTo        // ALL_PRODUCTS, SPECIFIC_CATEGORIES, SPECIFIC_PRODUCTS
+  categoryIds     String[]            // For SPECIFIC_CATEGORIES
+  productIds      String[]            // For SPECIFIC_PRODUCTS
+  startDate       DateTime
+  endDate         DateTime
+  isActive        Boolean             @default(true)
+  priority        Int                 @default(0) // Higher priority offers applied first
+  tenantId        String
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+
+  tenant          Tenant              @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  products        Product[]
+
+  @@index([tenantId])
+  @@index([isActive])
+  @@index([startDate])
+  @@index([endDate])
+  @@index([priority])
+}
+
+enum OfferType {
+  BUY_X_GET_Y_FREE
+  PERCENTAGE_DISCOUNT
+  FLAT_DISCOUNT
+}
+
+enum ApplicableTo {
+  ALL_PRODUCTS
+  SPECIFIC_CATEGORIES
+  SPECIFIC_PRODUCTS
+}
+
+enum StockStatus {
+  IN_STOCK
+  LOW_STOCK
+  OUT_OF_STOCK
+}
