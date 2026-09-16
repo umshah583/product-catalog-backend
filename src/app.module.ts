@@ -9,12 +9,14 @@ import { CategoriesModule } from './modules/categories/categories.module.js';
 import { SettingsModule } from './modules/settings/settings.module.js';
 import { UploadModule } from './modules/upload/upload.module.js';
 import { PromotionalOffersModule } from './modules/promotional-offers/promotional-offers.module.js';
+import { RealtimeModule } from './realtime/realtime.module.js';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
     }),
+    RealtimeModule,
     AuthModule,
     ProductsModule,
     CategoriesModule,
