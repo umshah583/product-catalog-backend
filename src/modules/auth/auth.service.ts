@@ -1,8 +1,9 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, ConflictException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
 import { AuthRepository } from './auth.repository.js';
 import { LoginDto } from './dto/login.dto.js';
+import { RegisterDto } from './dto/register.dto.js';
 
 @Injectable()
 export class AuthService {
@@ -89,5 +90,37 @@ export class AuthService {
 
   async hashPassword(password: string): Promise<string> {
     return bcrypt.hash(password, 10);
+  }
+
+  /**
+   * Create a new user. Only callable by an authenticated admin.
+   * The new user is assigned to the same tenant as the admin.
+   */
+  async register(registerDto: RegisterDto, adminTenantId: string) {
+    const existing = await this.authRepository.findByEmail(registerDto.email);
+    if (existing) {
+      throw new ConflictException('A user with this email already exists');
+    }
+
+    const hashedPassword = await this.hashPassword(registerDto.password);
+
+    const user = await this.authRepository.create({
+      email: registerDto.email,
+      password: hashedPassword,
+      firstName: registerDto.firstName ?? null,
+      lastName: registerDto.lastName ?? null,
+      role: (registerDto.role as any) ?? 'USER',
+      tenant: { connect: { id: adminTenantId } },
+      isActive: true,
+    });
+
+    return {
+      id: user.id,
+      email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      role: user.role,
+      tenantId: user.tenantId,
+    };
   }
 }
