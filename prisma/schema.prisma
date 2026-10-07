@@ -23,6 +23,7 @@ model Tenant {
   categories  Category[]
   settings    Settings?
   promotionalOffers PromotionalOffer[]
+  orders      Order[]
 
   @@index([slug])
   @@index([isActive])
@@ -70,6 +71,9 @@ model Settings {
   aboutCompany    String?
   whatsappEnabled Boolean  @default(false)
   logoUrl         String?
+  bannerTitle     String?
+  bannerSubtitle  String?
+  bannerImageUrl  String?
   primaryColor    String?
   secondaryColor  String?
   createdAt       DateTime @default(now())
@@ -176,6 +180,52 @@ enum ApplicableTo {
   ALL_PRODUCTS
   SPECIFIC_CATEGORIES
   SPECIFIC_PRODUCTS
+}
+
+// Customer Orders
+model Order {
+  id            String      @id @default(cuid())
+  orderNumber   String
+  customerName  String
+  customerPhone String
+  customerEmail String?
+  notes         String?
+  status        OrderStatus @default(PENDING)
+  totalAmount   Decimal     @db.Decimal(10, 2)
+  currency      String      @default("USD")
+  itemCount     Int
+  tenantId      String
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  tenant        Tenant      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  items         OrderItem[]
+
+  @@index([tenantId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model OrderItem {
+  id          String  @id @default(cuid())
+  orderId     String
+  productId   String?
+  productName String
+  sku         String?
+  unitPrice   Decimal @db.Decimal(10, 2)
+  quantity    Int
+  lineTotal   Decimal @db.Decimal(10, 2)
+
+  order       Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId])
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  COMPLETED
+  CANCELLED
 }
 
 enum StockStatus {

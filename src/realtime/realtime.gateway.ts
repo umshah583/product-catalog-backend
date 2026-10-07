@@ -123,4 +123,12 @@ export class RealtimeGateway
   emitOfferDeleted(tenantSlug: string, id: string) {
     this.broadcast(tenantSlug, 'offer:deleted', { id });
   }
+
+  emitOrderCreated(tenantSlug: string, order: unknown) {
+    this.broadcast(tenantSlug, 'order:created', order);
+  }
+
+  emitOrderUpdated(tenantSlug: string, order: unknown) {
+    this.broadcast(tenantSlug, 'order:updated', order);
+  }
 }
