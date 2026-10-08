@@ -1,0 +1,117 @@
+{
+  "version": 1,
+  "template": "credit-application-v1.pdf",
+  "pageSize": { "width": 612, "height": 792 },
+  "coordinateSystem": "top-left-origin",
+  "footer": {
+    "initials": { "x": 64, "y": 747, "size": 8 },
+    "stamp": { "x": 526, "y": 732, "w": 40, "h": 14 }
+  },
+  "fields": {
+    "p1.date.day":      { "page": 0, "type": "text", "x": 70,  "y": 177, "size": 10 },
+    "p1.date.month":    { "page": 0, "type": "text", "x": 91,  "y": 177, "size": 10 },
+    "p1.date.year":     { "page": 0, "type": "text", "x": 112, "y": 177, "size": 10 },
+    "p1.officeRef":     { "page": 0, "type": "text", "x": 488, "y": 177, "size": 9 },
+    "p1.commercialName":{ "page": 0, "type": "text", "x": 258, "y": 212, "size": 10 },
+    "p1.trn":           { "page": 0, "type": "text", "x": 249, "y": 230, "size": 10 },
+
+    "p1.check.1": { "page": 0, "type": "checkbox", "x": 438.5, "y": 296 },
+    "p1.check.2": { "page": 0, "type": "checkbox", "x": 438.5, "y": 322 },
+    "p1.check.3": { "page": 0, "type": "checkbox", "x": 438.5, "y": 351.5 },
+    "p1.check.4": { "page": 0, "type": "checkbox", "x": 438.5, "y": 386.5 },
+    "p1.check.5": { "page": 0, "type": "checkbox", "x": 438.5, "y": 422 },
+    "p1.check.6": { "page": 0, "type": "checkbox", "x": 438.5, "y": 451.5 },
+    "p1.check.7": { "page": 0, "type": "checkbox", "x": 438.5, "y": 481 },
+    "p1.check.8": { "page": 0, "type": "checkbox", "x": 438.5, "y": 510.5 },
+
+    "p1.remarks.1": { "page": 0, "type": "text", "x": 484, "y": 299,   "size": 8, "maxWidth": 90 },
+    "p1.remarks.2": { "page": 0, "type": "text", "x": 484, "y": 325,   "size": 8, "maxWidth": 90 },
+    "p1.remarks.3": { "page": 0, "type": "text", "x": 484, "y": 354.5, "size": 8, "maxWidth": 90 },
+    "p1.remarks.4": { "page": 0, "type": "text", "x": 484, "y": 389.5, "size": 8, "maxWidth": 90 },
+    "p1.remarks.5": { "page": 0, "type": "text", "x": 484, "y": 425,   "size": 8, "maxWidth": 90 },
+    "p1.remarks.6": { "page": 0, "type": "text", "x": 484, "y": 454.5, "size": 8, "maxWidth": 90 },
+    "p1.remarks.7": { "page": 0, "type": "text", "x": 484, "y": 484,   "size": 8, "maxWidth": 90 },
+    "p1.remarks.8": { "page": 0, "type": "text", "x": 484, "y": 513.5, "size": 8, "maxWidth": 90 },
+
+    "p1.signerName":  { "page": 0, "type": "text",  "x": 160, "y": 628, "size": 9 },
+    "p1.signature":   { "page": 0, "type": "image", "x": 200, "y": 605, "w": 90, "h": 26 },
+    "p1.stamp":       { "page": 0, "type": "image", "x": 380, "y": 595, "w": 90, "h": 40 },
+
+    "p2.date":         { "page": 1, "type": "text", "x": 67,  "y": 167, "size": 10 },
+    "p2.companyName":  { "page": 1, "type": "text", "x": 117, "y": 246, "size": 10 },
+
+    "p2.licenseNo":    { "page": 1, "type": "text", "x": 97,  "y": 302, "size": 10, "mirror": { "x": 485, "y": 301 } },
+    "p2.issueDate":    { "page": 1, "type": "text", "x": 101, "y": 320, "size": 10, "mirror": { "x": 454, "y": 319 } },
+    "p2.expiryDate":   { "page": 1, "type": "text", "x": 97,  "y": 338, "size": 10, "mirror": { "x": 457, "y": 337 } },
+
+    "p2.legal.LLC":         { "page": 1, "type": "checkbox", "x": 41.3,  "y": 362.5, "mirror": { "x": 562.8, "y": 362.5 } },
+    "p2.legal.ONE_PERSON":  { "page": 1, "type": "checkbox", "x": 91.3,  "y": 362.5, "mirror": { "x": 457.0, "y": 362.5 } },
+    "p2.legal.SOLE_EST":    { "page": 1, "type": "checkbox", "x": 41.3,  "y": 376.8, "mirror": { "x": 562.8, "y": 376.8 } },
+    "p2.legal.FZC":         { "page": 1, "type": "checkbox", "x": 149.4, "y": 376.8, "mirror": { "x": 502.0, "y": 376.8 } },
+    "p2.legal.FZE":         { "page": 1, "type": "checkbox", "x": 41.3,  "y": 391.1, "mirror": { "x": 562.8, "y": 391.1 } },
+    "p2.legal.CIVIL":       { "page": 1, "type": "checkbox", "x": 90.2,  "y": 391.1, "mirror": { "x": 457.9, "y": 391.1 } },
+    "p2.legal.OTHER":       { "page": 1, "type": "checkbox", "x": 41.3,  "y": 405.4, "mirror": { "x": 562.8, "y": 405.4 } },
+    "p2.legalOtherText":    { "page": 1, "type": "text",     "x": 83,    "y": 413.7, "size": 9, "mirror": { "x": 470, "y": 412.7 } },
+
+    "p2.emirate":   { "page": 1, "type": "text", "x": 80,  "y": 469.6, "size": 10, "mirror": { "x": 479, "y": 469 } },
+    "p2.area":      { "page": 1, "type": "text", "x": 68,  "y": 487.6, "size": 10, "mirror": { "x": 478, "y": 487 } },
+    "p2.street":    { "page": 1, "type": "text", "x": 72,  "y": 505.6, "size": 10, "mirror": { "x": 478, "y": 505 } },
+    "p2.landmark":  { "page": 1, "type": "text", "x": 90,  "y": 523.6, "size": 10, "mirror": { "x": 461, "y": 523 } },
+    "p2.building":  { "page": 1, "type": "text", "x": 84,  "y": 541.6, "size": 10, "mirror": { "x": 483, "y": 541 } },
+    "p2.shopNo":    { "page": 1, "type": "text", "x": 87,  "y": 559.6, "size": 10, "mirror": { "x": 469, "y": 559 } },
+    "p2.telMobile": { "page": 1, "type": "text", "x": 99,  "y": 577.6, "size": 10, "mirror": { "x": 453, "y": 577 } },
+    "p2.fax":       { "page": 1, "type": "text", "x": 64,  "y": 595.6, "size": 10, "mirror": { "x": 483, "y": 595.6 } },
+    "p2.email":     { "page": 1, "type": "text", "x": 73,  "y": 613.6, "size": 10, "mirror": { "x": 447, "y": 613 } },
+    "p2.poBox":     { "page": 1, "type": "text", "x": 86,  "y": 631.6, "size": 10, "mirror": { "x": 456, "y": 631 } },
+    "p2.makani":    { "page": 1, "type": "text", "x": 115, "y": 649.6, "size": 10, "mirror": { "x": 468, "y": 649 } },
+
+    "p3.owners": {
+      "page": 2, "type": "table",
+      "rowY": [181.5, 199.5, 217.5, 235.5],
+      "cols": {
+        "name":        { "x": 42 },
+        "capacity":    { "x": 191 },
+        "nationality": { "x": 311 },
+        "contact":     { "x": 431 }
+      },
+      "size": 9
+    },
+    "p3.banks": {
+      "page": 2, "type": "table",
+      "rowY": [319, 336.5, 354.5, 372.5],
+      "cols": {
+        "bankName":  { "x": 42 },
+        "branch":    { "x": 176 },
+        "accountNo": { "x": 286 },
+        "iban":      { "x": 421 }
+      },
+      "size": 9
+    },
+
+    "p3.creditAmount": { "page": 2, "type": "text", "x": 155, "y": 435.5, "size": 10, "mirror": { "x": 428, "y": 434 } },
+    "p3.terms.15":     { "page": 2, "type": "checkbox", "x": 109.7, "y": 446.5, "mirror": { "x": 402.4, "y": 446.5 } },
+    "p3.terms.30":     { "page": 2, "type": "checkbox", "x": 154.2, "y": 446.5, "mirror": { "x": 467.3, "y": 446.5 } },
+    "p3.terms.OTHER":  { "page": 2, "type": "checkbox", "x": 198.6, "y": 446.5, "mirror": { "x": 547.6, "y": 446.5 } },
+    "p3.termsOtherText": { "page": 2, "type": "text", "x": 240, "y": 455, "size": 9, "mirror": { "x": 505, "y": 454 } },
+
+    "p3.vatCompanyName": { "page": 2, "type": "text", "x": 114, "y": 510.5, "size": 10, "mirror": { "x": 440, "y": 510 } },
+    "p3.vatTrn":         { "page": 2, "type": "text", "x": 104, "y": 528.5, "size": 10, "mirror": { "x": 440, "y": 528 } },
+
+    "p3.references": {
+      "page": 2, "type": "table",
+      "rowY": [604, 621, 638],
+      "cols": {
+        "companyName":   { "x": 42 },
+        "contactPerson": { "x": 191 },
+        "mobile":        { "x": 321 },
+        "licenseNo":     { "x": 441 }
+      },
+      "size": 9
+    },
+
+    "p5.sealImage":   { "page": 4, "type": "image", "x": 60,  "y": 480, "w": 120, "h": 70 },
+    "p5.signerName":  { "page": 4, "type": "text",  "x": 375, "y": 472, "size": 10 },
+    "p5.signature":   { "page": 4, "type": "image", "x": 400, "y": 495, "w": 110, "h": 30 },
+    "p5.signerDate":  { "page": 4, "type": "text",  "x": 375, "y": 538, "size": 10 }
+  }
+}

@@ -25,6 +25,7 @@ model Tenant {
   promotionalOffers PromotionalOffer[]
   orders      Order[]
   deliveryNotes DeliveryNote[]
+  creditApplications CreditApplication[]
 
   @@index([slug])
   @@index([isActive])
@@ -281,6 +282,75 @@ enum DeliveryNoteStatus {
   PENDING
   DELIVERED
   CANCELLED
+}
+
+// Customer Credit Applications (AAF official form)
+model CreditApplication {
+  id              String   @id @default(cuid())
+  appNumber       String
+  customerName    String
+  customerPhone   String?
+  customerEmail   String?
+  customerTrn     String?
+  status          CreditAppStatus @default(DRAFT)
+  formData        Json
+  signatureData   String?  // data URL (png) or S3 key
+  stampData       String?
+  initials        String?
+  pdfKey          String?  // generated PDF storage key
+  internalNotes   String?
+  reviewedBy      String?
+  reviewedAt      DateTime?
+  submittedAt     DateTime?
+  tenantId        String
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  tenant          Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  documents       CreditAppDocument[]
+  audits          CreditAppAudit[]
+
+  @@unique([tenantId, appNumber])
+  @@index([tenantId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model CreditAppDocument {
+  id            String   @id @default(cuid())
+  applicationId String
+  docType       String
+  fileName      String
+  fileUrl       String
+  fileKey       String
+  received      Boolean  @default(false)
+  remarks       String?
+  createdAt     DateTime @default(now())
+
+  application   CreditApplication @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+
+  @@index([applicationId])
+}
+
+model CreditAppAudit {
+  id            String   @id @default(cuid())
+  applicationId String
+  action        String
+  detail        String?
+  actor         String?
+  createdAt     DateTime @default(now())
+
+  application   CreditApplication @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+
+  @@index([applicationId])
+}
+
+enum CreditAppStatus {
+  DRAFT
+  SUBMITTED
+  UNDER_REVIEW
+  APPROVED
+  REJECTED
 }
 
 enum OrderStatus {

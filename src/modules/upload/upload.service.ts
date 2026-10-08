@@ -63,6 +63,36 @@ export class UploadService {
     return Promise.all(uploadPromises);
   }
 
+  async uploadDocument(file: any): Promise<{ url: string; key: string }> {
+    try {
+      const allowed = [
+        'application/pdf',
+        'image/png',
+        'image/jpeg',
+        'image/jpg',
+        'image/webp',
+      ];
+      if (!allowed.includes(file.mimetype)) {
+        throw new BadRequestException(
+          'Only PDF and image files are allowed for documents',
+        );
+      }
+      const ext = file.originalname?.split('.').pop() || 'bin';
+      const key = `credit-applications/${uuidv4()}.${ext}`;
+      const command = new PutObjectCommand({
+        Bucket: this.bucketName,
+        Key: key,
+        Body: file.buffer,
+        ContentType: file.mimetype,
+      });
+      await this.s3Client.send(command);
+      return { url: `${process.env.S3_ENDPOINT}/${this.bucketName}/${key}`, key };
+    } catch (error) {
+      if (error instanceof BadRequestException) throw error;
+      throw new BadRequestException('Failed to upload document');
+    }
+  }
+
   async deleteImage(key: string): Promise<void> {
     try {
       const command = new DeleteObjectCommand({

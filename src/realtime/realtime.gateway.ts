@@ -135,4 +135,8 @@ export class RealtimeGateway
   emitDeliveryNoteUpdated(tenantSlug: string, dn: unknown) {
     this.broadcast(tenantSlug, 'delivery-note:updated', dn);
   }
+
+  emitCreditApplicationUpdated(tenantSlug: string, app: unknown) {
+    this.broadcast(tenantSlug, 'credit-application:updated', app);
+  }
 }

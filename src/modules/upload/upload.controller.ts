@@ -23,4 +23,13 @@ export class UploadController {
     }
     return this.uploadService.uploadMultipleImages(files);
   }
+
+  @Post('document')
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadDocument(@UploadedFile() file: any) {
+    if (!file) {
+      throw new BadRequestException('No file uploaded');
+    }
+    return this.uploadService.uploadDocument(file);
+  }
 }
