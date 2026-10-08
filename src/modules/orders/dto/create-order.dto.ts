@@ -22,6 +22,10 @@ export class OrderItemDto {
 
   @IsOptional()
   @IsString()
+  brand?: string;
+
+  @IsOptional()
+  @IsString()
   sku?: string;
 
   @IsNumber()
@@ -49,6 +53,10 @@ export class CreateOrderDto {
   @IsOptional()
   @IsEmail()
   customerEmail?: string;
+
+  @IsOptional()
+  @IsString()
+  customerAddress?: string;
 
   @IsOptional()
   @IsString()

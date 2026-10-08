@@ -15,6 +15,7 @@ export class OrdersRepository {
         customerName: dto.customerName,
         customerPhone: dto.customerPhone,
         customerEmail: dto.customerEmail ?? null,
+        customerAddress: dto.customerAddress ?? null,
         notes: dto.notes ?? null,
         totalAmount: dto.totalAmount,
         currency: dto.currency ?? 'USD',
@@ -24,6 +25,7 @@ export class OrdersRepository {
           create: dto.items.map((item) => ({
             productId: item.productId ?? null,
             productName: item.productName,
+            brand: item.brand ?? null,
             sku: item.sku ?? null,
             unitPrice: item.unitPrice,
             quantity: item.quantity,
