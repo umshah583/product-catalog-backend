@@ -266,7 +266,7 @@ export class CreditApplicationPdfService {
     text('p1.date.day', String(appDate.getDate()).padStart(2, '0'));
     text('p1.date.month', String(appDate.getMonth() + 1).padStart(2, '0'));
     text('p1.date.year', String(appDate.getFullYear()));
-    text('p1.officeRef', application.appNumber, true);
+    // 'Customer Reference No.' is for office use — left blank.
     text('p1.commercialName', data.commercialName ?? application.customerName);
     text('p1.trn', data.trn ?? application.customerTrn ?? '');
 
