@@ -131,4 +131,8 @@ export class RealtimeGateway
   emitOrderUpdated(tenantSlug: string, order: unknown) {
     this.broadcast(tenantSlug, 'order:updated', order);
   }
+
+  emitDeliveryNoteUpdated(tenantSlug: string, dn: unknown) {
+    this.broadcast(tenantSlug, 'delivery-note:updated', dn);
+  }
 }

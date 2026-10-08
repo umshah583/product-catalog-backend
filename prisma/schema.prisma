@@ -24,6 +24,7 @@ model Tenant {
   settings    Settings?
   promotionalOffers PromotionalOffer[]
   orders      Order[]
+  deliveryNotes DeliveryNote[]
 
   @@index([slug])
   @@index([isActive])
@@ -221,6 +222,65 @@ model OrderItem {
   order       Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
 
   @@index([orderId])
+}
+
+// Delivery Notes
+model DeliveryNote {
+  id              String             @id @default(cuid())
+  dnNumber        String
+  customerName    String
+  customerPhone   String
+  customerEmail   String?
+  customerTrn     String?
+  billingAddress  String?
+  shippingAddress String?
+  notes           String?
+  status          DeliveryNoteStatus @default(DRAFT)
+  salesman        String?
+  warehouse       String?
+  driver          String?
+  vehicleNumber   String?
+  orderId         String?
+  orderNumber     String?
+  deliveryDate    DateTime?
+  totalAmount     Decimal            @db.Decimal(10, 2)
+  currency        String             @default("AED")
+  itemCount       Int
+  tenantId        String
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+
+  tenant          Tenant             @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  items           DeliveryNoteItem[]
+
+  @@unique([tenantId, dnNumber])
+  @@index([tenantId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model DeliveryNoteItem {
+  id             String  @id @default(cuid())
+  deliveryNoteId String
+  productId      String?
+  productName    String
+  brand          String?
+  sku            String?
+  barcode        String?
+  quantity       Int
+  unitPrice      Decimal @db.Decimal(10, 2)
+  lineTotal      Decimal @db.Decimal(10, 2)
+
+  deliveryNote   DeliveryNote @relation(fields: [deliveryNoteId], references: [id], onDelete: Cascade)
+
+  @@index([deliveryNoteId])
+}
+
+enum DeliveryNoteStatus {
+  DRAFT
+  PENDING
+  DELIVERED
+  CANCELLED
 }
 
 enum OrderStatus {
