@@ -83,32 +83,78 @@ export class CreditApplicationPdfService {
     const pages = doc.getPages();
     const data = (application.formData ?? {}) as Record<string, any>;
 
-    const drawText = (p: number, x: number, y: number, text: string, size = 10) => {
+    const ascii = (s: string) => s.replace(/[^\x20-\x7E]/g, '');
+
+    /**
+     * Fit text to a width by shrinking the font (down to `min`), then
+     * truncating with an ellipsis if it still doesn't fit.
+     */
+    const fitText = (
+      v: string,
+      maxWidth: number | undefined,
+      size: number,
+      min = 5,
+    ): { v: string; size: number } => {
+      if (!maxWidth) return { v, size };
+      const clean = ascii(v) || v;
+      let s = size;
+      let w = font.widthOfTextAtSize(clean, s);
+      while (w > maxWidth && s > min) {
+        s -= 0.5;
+        w = font.widthOfTextAtSize(clean, s);
+      }
+      if (w <= maxWidth) return { v: clean, size: s };
+      // truncate
+      let t = clean;
+      while (t.length > 3 && font.widthOfTextAtSize(t + '…', min) > maxWidth) {
+        t = t.slice(0, -1);
+      }
+      return { v: t + '…', size: min };
+    };
+
+    const drawText = (
+      p: number,
+      x: number,
+      y: number,
+      text: string,
+      size = 10,
+      maxWidth?: number,
+    ) => {
       const page = pages[p];
       if (!page || !text) return;
+      const { v, size: s } = fitText(String(text), maxWidth, size);
       try {
-        page.drawText(String(text), {
+        page.drawText(v, {
           x,
           y: this.ty(page.getHeight(), y),
-          size,
+          size: s,
           font,
           color: rgb(0, 0, 0),
         });
-      } catch {
-        // Non-Latin (e.g. Arabic) glyphs aren't encodable in WinAnsi —
-        // strip them rather than crashing the whole document.
-        const ascii = String(text).replace(/[^\x20-\x7E]/g, '');
-        if (!ascii) return;
-        try {
-          page.drawText(ascii, {
-            x,
-            y: this.ty(page.getHeight(), y),
-            size,
-            font,
-            color: rgb(0, 0, 0),
-          });
-        } catch {}
-      }
+      } catch {}
+    };
+
+    /** Right-aligned text: `x` is the RIGHT edge the text must end at. */
+    const drawTextRight = (
+      p: number,
+      xEnd: number,
+      y: number,
+      text: string,
+      size = 10,
+      maxWidth?: number,
+    ) => {
+      const page = pages[p];
+      if (!page || !text) return;
+      const { v, size: s } = fitText(String(text), maxWidth, size);
+      try {
+        page.drawText(v, {
+          x: xEnd - font.widthOfTextAtSize(v, s),
+          y: this.ty(page.getHeight(), y),
+          size: s,
+          font,
+          color: rgb(0, 0, 0),
+        });
+      } catch {}
     };
 
     const drawCheck = (p: number, x: number, y: number) => {
@@ -156,7 +202,13 @@ export class CreditApplicationPdfService {
     const stampImg = await embedImage(application.stampData);
     const f = map.fields;
 
-    /** Write a mapped text field, honoring its optional Arabic mirror column. */
+    /**
+     * Write a mapped text field. The English side is left-aligned at `x`;
+     * the Arabic mirror side is right-aligned — `mirror.x` is the right
+     * edge the value must end at (just before the Arabic label), so long
+     * values extend left into the dotted space instead of colliding with
+     * the label.
+     */
     const text = (key: string, value: string, bold = false) => {
       const def = f[key];
       const v = String(value ?? '');
@@ -166,14 +218,16 @@ export class CreditApplicationPdfService {
       const size = def.size ?? 10;
       const yEn = this.ty(page.getHeight(), def.y!);
       try {
-        page.drawText(v, { x: def.x!, y: yEn, size, font: bold ? boldFont : font, color: rgb(0, 0, 0) });
+        const { v: fv, size: fs } = fitText(v, def.maxWidth, size);
+        page.drawText(fv, { x: def.x!, y: yEn, size: fs, font: bold ? boldFont : font, color: rgb(0, 0, 0) });
       } catch {}
       if (def.mirror) {
+        const { v: fv, size: fs } = fitText(v, def.maxWidth, size);
         try {
-          page.drawText(v, {
-            x: def.mirror.x,
+          page.drawText(fv, {
+            x: def.mirror.x - (bold ? boldFont : font).widthOfTextAtSize(fv, fs),
             y: this.ty(page.getHeight(), def.mirror.y),
-            size,
+            size: fs,
             font: bold ? boldFont : font,
             color: rgb(0, 0, 0),
           });
@@ -191,10 +245,18 @@ export class CreditApplicationPdfService {
     const table = (key: string, rows: any[]) => {
       const def = f[key];
       if (!def || !def.rowY || !def.cols) return;
+      const colEntries = Object.entries(def.cols!);
       rows.slice(0, def.rowY.length).forEach((row: any, i: number) => {
-        for (const [col, pos] of Object.entries(def.cols!)) {
+        for (const [col, pos] of colEntries) {
           const v = row?.[col];
-          if (v) drawText(def.page, pos.x, def.rowY![i], String(v), def.size ?? 9);
+          if (!v) continue;
+          // column width = next column's x minus this x, minus padding
+          const nextX = colEntries
+            .map(([, p]) => p.x)
+            .filter((x) => x > pos.x)
+            .sort((a, b) => a - b)[0];
+          const maxW = nextX ? nextX - pos.x - 5 : 576 - pos.x - 5;
+          drawText(def.page, pos.x, def.rowY![i], String(v), def.size ?? 9, maxW);
         }
       });
     };
