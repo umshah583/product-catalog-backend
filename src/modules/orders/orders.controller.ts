@@ -3,6 +3,7 @@ import {
   Get,
   Post,
   Put,
+  Delete,
   Param,
   Body,
   Query,
@@ -58,6 +59,16 @@ export class OrdersController {
   ) {
     const order = await this.ordersService.updateStatus(tenant.id, id, dto.status);
     this.realtime.emitOrderUpdated(tenant.slug, order);
+    return order;
+  }
+
+  @Delete(':id')
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async delete(@Tenant() tenant: any, @Param('id') id: string) {
+    const order = await this.ordersService.findById(tenant.id, id);
+    await this.ordersService.delete(tenant.id, id);
+    this.realtime.emitOrderDeleted(tenant.slug, id);
     return order;
   }
 }

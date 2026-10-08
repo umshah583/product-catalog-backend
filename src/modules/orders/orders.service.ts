@@ -30,4 +30,9 @@ export class OrdersService {
     await this.findById(tenantId, id);
     return this.ordersRepository.updateStatus(tenantId, id, status);
   }
+
+  async delete(tenantId: string, id: string) {
+    await this.findById(tenantId, id);
+    return this.ordersRepository.delete(tenantId, id);
+  }
 }

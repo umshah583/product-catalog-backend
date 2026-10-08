@@ -62,4 +62,10 @@ export class OrdersRepository {
       include: { items: true },
     });
   }
+
+  async delete(tenantId: string, id: string) {
+    return this.prisma.order.delete({
+      where: { id },
+    });
+  }
 }
