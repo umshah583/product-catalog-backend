@@ -35,6 +35,6 @@ export class CustomerLoginDto {
 
 export class UpdateCustomerStatusDto {
   @IsString()
-  @IsIn(['PENDING', 'APPROVED', 'REJECTED'])
-  status!: 'PENDING' | 'APPROVED' | 'REJECTED';
+  @IsIn(['PENDING', 'APPROVED', 'REJECTED', 'BLOCKED'])
+  status!: 'PENDING' | 'APPROVED' | 'REJECTED' | 'BLOCKED';
 }

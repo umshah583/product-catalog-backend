@@ -58,7 +58,7 @@ export class CustomersRepository {
     });
   }
 
-  updateStatus(tenantId: string, id: string, status: 'PENDING' | 'APPROVED' | 'REJECTED') {
+  updateStatus(tenantId: string, id: string, status: 'PENDING' | 'APPROVED' | 'REJECTED' | 'BLOCKED') {
     return this.prisma.customer.update({
       where: { id, tenantId },
       data: { status },

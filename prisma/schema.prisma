@@ -385,6 +385,7 @@ enum CustomerStatus {
   PENDING
   APPROVED
   REJECTED
+  BLOCKED
 }
 
 enum OrderStatus {

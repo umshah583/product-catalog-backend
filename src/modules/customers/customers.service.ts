@@ -45,6 +45,9 @@ export class CustomersService {
     if (customer.status === 'REJECTED') {
       throw new ForbiddenException('This account has been rejected');
     }
+    if (customer.status === 'BLOCKED') {
+      throw new ForbiddenException('This account has been blocked');
+    }
 
     const token = this.jwtService.sign(
       { sub: customer.id, tenantId, type: 'customer' },
@@ -73,7 +76,7 @@ export class CustomersService {
     return this.customersRepository.findAll(tenantId);
   }
 
-  async updateStatus(tenantId: string, id: string, status: 'PENDING' | 'APPROVED' | 'REJECTED') {
+  async updateStatus(tenantId: string, id: string, status: 'PENDING' | 'APPROVED' | 'REJECTED' | 'BLOCKED') {
     const existing = await this.customersRepository.findById(tenantId, id);
     if (!existing) throw new NotFoundException('Customer not found');
     return this.customersRepository.updateStatus(tenantId, id, status);
