@@ -32,6 +32,7 @@ export class OrdersRepository {
             unitPrice: item.unitPrice,
             quantity: item.quantity,
             lineTotal: item.lineTotal,
+            isFree: item.isFree ?? false,
           })),
         },
       },

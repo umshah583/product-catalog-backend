@@ -229,6 +229,7 @@ model OrderItem {
   unitPrice   Decimal @db.Decimal(10, 2)
   quantity    Int
   lineTotal   Decimal @db.Decimal(10, 2)
+  isFree      Boolean @default(false)
 
   order       Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
 

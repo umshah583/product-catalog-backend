@@ -1,5 +1,6 @@
 import {
   IsArray,
+  IsBoolean,
   IsEmail,
   IsInt,
   IsNotEmpty,
@@ -43,6 +44,10 @@ export class OrderItemDto {
   @IsNumber()
   @Min(0)
   lineTotal!: number;
+
+  @IsOptional()
+  @IsBoolean()
+  isFree?: boolean;
 }
 
 export class CreateOrderDto {
