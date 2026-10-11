@@ -3,7 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
 import { AuthRepository } from './auth.repository.js';
 import { LoginDto } from './dto/login.dto.js';
-import { RegisterDto } from './dto/register.dto.js';
+import { RegisterDto, UpdateUserDto } from './dto/register.dto.js';
 
 @Injectable()
 export class AuthService {
@@ -94,6 +94,18 @@ export class AuthService {
 
   async listUsers(tenantId: string) {
     return this.authRepository.findByTenant(tenantId);
+  }
+
+  async updateUser(tenantId: string, userId: string, dto: UpdateUserDto) {
+    const data: Record<string, unknown> = {};
+    if (dto.firstName !== undefined) data.firstName = dto.firstName || null;
+    if (dto.lastName !== undefined) data.lastName = dto.lastName || null;
+    if (dto.role !== undefined) data.role = dto.role;
+    if (dto.password) data.password = await this.hashPassword(dto.password);
+
+    const result = await this.authRepository.update(tenantId, userId, data);
+    if (result.count === 0) throw new UnauthorizedException('User not found');
+    return { id: userId, updated: true };
   }
 
   async setUserActive(tenantId: string, userId: string, isActive: boolean) {

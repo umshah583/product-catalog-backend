@@ -53,6 +53,13 @@ export class AuthRepository {
     });
   }
 
+  async update(tenantId: string, userId: string, data: Record<string, unknown>) {
+    return this.prisma.user.updateMany({
+      where: { id: userId, tenantId },
+      data,
+    });
+  }
+
   async updateActive(tenantId: string, userId: string, isActive: boolean) {
     return this.prisma.user.updateMany({
       where: { id: userId, tenantId },

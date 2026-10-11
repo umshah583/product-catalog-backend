@@ -20,3 +20,23 @@ export class RegisterDto {
   @IsIn(['ADMIN', 'USER'])
   role?: string;
 }
+
+export class UpdateUserDto {
+  @IsOptional()
+  @IsString()
+  firstName?: string;
+
+  @IsOptional()
+  @IsString()
+  lastName?: string;
+
+  @IsOptional()
+  @IsIn(['ADMIN', 'USER'])
+  role?: string;
+
+  /** Optional new password — only update when provided. */
+  @IsOptional()
+  @IsString()
+  @MinLength(6)
+  password?: string;
+}

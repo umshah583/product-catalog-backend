@@ -12,7 +12,7 @@ import {
 } from '@nestjs/common';
 import { AuthService } from './auth.service.js';
 import { LoginDto } from './dto/login.dto.js';
-import { RegisterDto } from './dto/register.dto.js';
+import { RegisterDto, UpdateUserDto } from './dto/register.dto.js';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard.js';
 
 @Controller('auth')
@@ -53,6 +53,17 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   async listUsers(@Req() req: any) {
     return this.authService.listUsers(req.user.tenantId);
+  }
+
+  /** Update a user's name, role, or password. */
+  @Patch('users/:id')
+  @UseGuards(JwtAuthGuard)
+  async updateUser(
+    @Param('id') id: string,
+    @Body() dto: UpdateUserDto,
+    @Req() req: any,
+  ) {
+    return this.authService.updateUser(req.user.tenantId, id, dto);
   }
 
   /** Activate/deactivate a user account. */
