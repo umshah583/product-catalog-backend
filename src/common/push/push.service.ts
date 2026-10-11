@@ -110,6 +110,16 @@ export class PushService implements OnModuleInit {
     await this.send(rows.map((r) => r.token), title, body, 'announcements');
   }
 
+  /** Store display currency from Settings — product/order records
+   *  carry their own stale 'USD' field. */
+  async tenantCurrency(tenantId: string): Promise<string> {
+    const s = await this.prisma.settings.findUnique({
+      where: { tenantId },
+      select: { currency: true },
+    });
+    return s?.currency ?? 'AED';
+  }
+
   /** Push to every portal/salesman device in the tenant (new orders etc). */
   async sendToUsers(tenantId: string, title: string, body: string) {
     const rows = await this.prisma.deviceToken.findMany({

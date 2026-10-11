@@ -37,10 +37,11 @@ export class OrdersController {
     const order = await this.ordersService.create(tenant.id, dto);
     this.realtime.emitOrderCreated(tenant.slug, order);
     // Push to salesmen even when the app is killed
+    const currency = await this.push.tenantCurrency(tenant.id);
     await this.push.sendToUsers(
       tenant.id,
       `New order ${order.orderNumber}`,
-      `${order.customerName} — ${order.currency} ${Number(order.totalAmount).toFixed(2)}`,
+      `${order.customerName} — ${currency} ${Number(order.totalAmount).toFixed(2)}`,
     );
     return order;
   }

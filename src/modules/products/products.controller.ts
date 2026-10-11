@@ -53,7 +53,7 @@ export class ProductsController {
       (Number(before.price) !== Number(product.price) ||
         JSON.stringify(before.priceTiers) !== JSON.stringify(product.priceTiers));
     if (priceChanged) {
-      const cur = product.currency ?? 'AED';
+      const cur = await this.push.tenantCurrency(tenant.id);
       const body = `${product.name} is now ${cur} ${Number(product.price).toFixed(2)}`;
       this.realtime.emitNotificationBroadcast(tenant.slug, {
         id: `${Date.now()}`,
