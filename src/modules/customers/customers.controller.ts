@@ -22,6 +22,7 @@ import { Tenant } from '../../common/decorators/tenant.decorator.js';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard.js';
 import { CustomerAuthGuard } from '../../common/guards/customer-auth.guard.js';
 import { RealtimeGateway } from '../../realtime/realtime.gateway.js';
+import { PushService } from '../../common/push/push.service.js';
 
 @Controller('customers')
 @UseInterceptors(TenantInterceptor)
@@ -29,6 +30,7 @@ export class CustomersController {
   constructor(
     private customersService: CustomersService,
     private realtime: RealtimeGateway,
+    private push: PushService,
   ) {}
 
   // ---- Public (mobile app) ----
@@ -46,6 +48,20 @@ export class CustomersController {
   }
 
   // ---- Customer-authenticated ----
+
+  /** Register the device's FCM token so broadcasts can reach it. */
+  @Post('device-token')
+  @UseGuards(CustomerAuthGuard)
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async deviceToken(
+    @Tenant() tenant: any,
+    @Req() req: any,
+    @Body() body: { token: string; platform?: string },
+  ) {
+    await this.push.registerToken(tenant.id, body.token, body.platform, {
+      customerId: req.customer.sub,
+    });
+  }
 
   @Get('me')
   @UseGuards(CustomerAuthGuard)

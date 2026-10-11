@@ -14,10 +14,14 @@ import { AuthService } from './auth.service.js';
 import { LoginDto } from './dto/login.dto.js';
 import { RegisterDto, UpdateUserDto } from './dto/register.dto.js';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard.js';
+import { PushService } from '../../common/push/push.service.js';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private push: PushService,
+  ) {}
 
   @Post('login')
   @HttpCode(HttpStatus.OK)
@@ -46,6 +50,19 @@ export class AuthController {
   @HttpCode(HttpStatus.CREATED)
   async register(@Body() registerDto: RegisterDto, @Req() req: any) {
     return this.authService.register(registerDto, req.user.tenantId);
+  }
+
+  /** Register the device's FCM token — salesman app gets order pushes. */
+  @Post('device-token')
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async deviceToken(
+    @Req() req: any,
+    @Body() body: { token: string; platform?: string },
+  ) {
+    await this.push.registerToken(req.user.tenantId, body.token, body.platform, {
+      userId: req.user.sub,
+    });
   }
 
   /** List all users (salesmen + admins) in the current tenant. */

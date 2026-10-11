@@ -15,6 +15,7 @@ import { CreditApplicationsModule } from './modules/credit-applications/credit-a
 import { CustomersModule } from './modules/customers/customers.module.js';
 import { NotificationsModule } from './modules/notifications/notifications.module.js';
 import { RealtimeModule } from './realtime/realtime.module.js';
+import { PushModule } from './common/push/push.module.js';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { RealtimeModule } from './realtime/realtime.module.js';
       isGlobal: true,
     }),
     RealtimeModule,
+    PushModule,
     AuthModule,
     ProductsModule,
     CategoriesModule,

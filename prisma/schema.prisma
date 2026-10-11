@@ -28,6 +28,7 @@ model Tenant {
   creditApplications CreditApplication[]
   customers     Customer[]
   notifications Notification[]
+  deviceTokens  DeviceToken[]
 
   @@index([slug])
   @@index([isActive])
@@ -48,6 +49,7 @@ model User {
   updatedAt     DateTime  @updatedAt
 
   tenant        Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  deviceTokens  DeviceToken[]
 
   @@index([email])
   @@index([tenantId])
@@ -376,6 +378,7 @@ model Customer {
 
   tenant    Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   orders    Order[]
+  deviceTokens DeviceToken[]
 
   @@unique([tenantId, email])
   @@index([tenantId])
@@ -394,6 +397,26 @@ model Notification {
 
   @@index([tenantId])
   @@index([createdAt])
+}
+
+// FCM device registrations — customers and portal users (salesmen)
+model DeviceToken {
+  id         String    @id @default(cuid())
+  tenantId   String
+  customerId String?
+  userId     String?
+  token      String    @unique
+  platform   String?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  tenant     Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  customer   Customer? @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  user       User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([customerId])
+  @@index([userId])
 }
 
 enum CustomerStatus {

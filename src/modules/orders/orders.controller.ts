@@ -19,6 +19,7 @@ import { TenantInterceptor } from '../../common/interceptors/tenant.interceptor.
 import { Tenant } from '../../common/decorators/tenant.decorator.js';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard.js';
 import { RealtimeGateway } from '../../realtime/realtime.gateway.js';
+import { PushService } from '../../common/push/push.service.js';
 
 @Controller('orders')
 @UseInterceptors(TenantInterceptor)
@@ -26,6 +27,7 @@ export class OrdersController {
   constructor(
     private ordersService: OrdersService,
     private realtime: RealtimeGateway,
+    private push: PushService,
   ) {}
 
   // Public — the mobile app submits orders here
@@ -34,6 +36,12 @@ export class OrdersController {
   async create(@Tenant() tenant: any, @Body() dto: CreateOrderDto) {
     const order = await this.ordersService.create(tenant.id, dto);
     this.realtime.emitOrderCreated(tenant.slug, order);
+    // Push to salesmen even when the app is killed
+    await this.push.sendToUsers(
+      tenant.id,
+      `New order ${order.orderNumber}`,
+      `${order.customerName} — ${order.currency} ${Number(order.totalAmount).toFixed(2)}`,
+    );
     return order;
   }
 

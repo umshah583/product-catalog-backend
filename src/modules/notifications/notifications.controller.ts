@@ -14,6 +14,7 @@ import { TenantInterceptor } from '../../common/interceptors/tenant.interceptor.
 import { Tenant } from '../../common/decorators/tenant.decorator.js';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard.js';
 import { RealtimeGateway } from '../../realtime/realtime.gateway.js';
+import { PushService } from '../../common/push/push.service.js';
 
 @Controller('notifications')
 @UseInterceptors(TenantInterceptor)
@@ -21,6 +22,7 @@ export class NotificationsController {
   constructor(
     private notificationsService: NotificationsService,
     private realtime: RealtimeGateway,
+    private push: PushService,
   ) {}
 
   // ---- Public (mobile app) — broadcast inbox ----
@@ -43,6 +45,12 @@ export class NotificationsController {
       body: notification.body,
       createdAt: notification.createdAt,
     });
+    // Reach killed/background apps via FCM
+    await this.push.sendToCustomers(
+      tenant.id,
+      notification.title,
+      notification.body,
+    );
     return notification;
   }
 }
