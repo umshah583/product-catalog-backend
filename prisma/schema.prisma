@@ -121,6 +121,7 @@ model Product {
   currency        String           @default("USD")
   stockStatus     StockStatus      @default(IN_STOCK)
   images          String[]
+  colors          String[]
   specifications  Json?
   featured        Boolean          @default(false)
   isActive        Boolean          @default(true)
@@ -216,6 +217,7 @@ model OrderItem {
   productName String
   brand       String?
   sku         String?
+  color       String?
   unitPrice   Decimal @db.Decimal(10, 2)
   quantity    Int
   lineTotal   Decimal @db.Decimal(10, 2)
@@ -267,6 +269,7 @@ model DeliveryNoteItem {
   productName    String
   brand          String?
   sku            String?
+  color          String?
   barcode        String?
   quantity       Int
   unitPrice      Decimal @db.Decimal(10, 2)

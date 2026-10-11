@@ -15,6 +15,7 @@ export class DeliveryNotesRepository {
       productName: item.productName,
       brand: item.brand ?? null,
       sku: item.sku ?? null,
+      color: item.color ?? null,
       barcode: item.barcode ?? null,
       quantity: item.quantity,
       unitPrice: item.unitPrice,

@@ -28,6 +28,10 @@ export class OrderItemDto {
   @IsString()
   sku?: string;
 
+  @IsOptional()
+  @IsString()
+  color?: string;
+
   @IsNumber()
   @Min(0)
   unitPrice!: number;

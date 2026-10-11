@@ -31,6 +31,10 @@ export class DeliveryNoteItemDto {
 
   @IsOptional()
   @IsString()
+  color?: string;
+
+  @IsOptional()
+  @IsString()
   barcode?: string;
 
   @IsInt()

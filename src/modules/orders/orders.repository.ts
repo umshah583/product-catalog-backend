@@ -27,6 +27,7 @@ export class OrdersRepository {
             productName: item.productName,
             brand: item.brand ?? null,
             sku: item.sku ?? null,
+            color: item.color ?? null,
             unitPrice: item.unitPrice,
             quantity: item.quantity,
             lineTotal: item.lineTotal,
