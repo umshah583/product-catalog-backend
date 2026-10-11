@@ -15,8 +15,11 @@ export class ProductsRepository {
       orderBy?: Prisma.ProductOrderByWithRelationInput;
     },
   ): Promise<any[]> {
+    // Only whitelist Prisma args — raw query params must not leak in
     const products = await this.prisma.product.findMany({
-      ...params,
+      skip: params?.skip,
+      take: params?.take,
+      orderBy: params?.orderBy,
       where: {
         ...params?.where,
         tenantId,

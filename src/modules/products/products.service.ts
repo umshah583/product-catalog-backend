@@ -11,7 +11,18 @@ export class ProductsService {
   ) {}
 
   async findAll(tenantId: string, params?: any) {
-    return this.productsRepository.findAll(tenantId, params);
+    const where: any = params?.where ?? {};
+    if (params?.search) {
+      where.OR = [
+        { name: { contains: params.search, mode: 'insensitive' } },
+        { sku: { contains: params.search, mode: 'insensitive' } },
+        { brand: { contains: params.search, mode: 'insensitive' } },
+      ];
+    }
+    return this.productsRepository.findAll(tenantId, {
+      where,
+      take: params?.limit ? Number(params.limit) : undefined,
+    });
   }
 
   async findOne(tenantId: string, id: string) {
