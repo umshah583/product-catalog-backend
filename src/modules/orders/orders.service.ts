@@ -88,7 +88,8 @@ export class OrdersService {
     const result: OrderItemDto[] = [];
     const freeUsed = new Map<string, number>();
     for (const i of items) {
-      if (i.isFree && i.productId) {
+      if (i.isFree) {
+        if (!i.productId) continue; // can't verify — drop
         const used = freeUsed.get(i.productId) ?? 0;
         const allowed = freeAllowed.get(i.productId) ?? 0;
         const take = Math.min(i.quantity, allowed - used);

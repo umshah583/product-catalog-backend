@@ -51,7 +51,7 @@ export class CustomersService {
 
     const token = this.jwtService.sign(
       { sub: customer.id, tenantId, type: 'customer' },
-      { secret: process.env.JWT_SECRET, expiresIn: '30d' },
+      { secret: process.env.JWT_SECRET, expiresIn: '365d' },
     );
 
     return {
