@@ -68,9 +68,13 @@ export class PushService implements OnModuleInit {
       where: { token },
       update: {
         tenantId,
-        customerId: owner.customerId ?? null,
-        userId: owner.userId ?? null,
         platform: platform ?? null,
+        // Only relink when an owner is explicitly provided — a
+        // public refresh must not strip an existing customer link
+        ...(owner.customerId !== undefined && {
+          customerId: owner.customerId,
+        }),
+        ...(owner.userId !== undefined && { userId: owner.userId }),
       },
       create: {
         tenantId,
@@ -87,6 +91,20 @@ export class PushService implements OnModuleInit {
   async sendToCustomers(tenantId: string, title: string, body: string) {
     const rows = await this.prisma.deviceToken.findMany({
       where: { tenantId, userId: null },
+      select: { token: true },
+    });
+    await this.send(rows.map((r) => r.token), title, body, 'announcements');
+  }
+
+  /** Push to one customer's devices — order updates, account status. */
+  async sendToCustomer(
+    tenantId: string,
+    customerId: string,
+    title: string,
+    body: string,
+  ) {
+    const rows = await this.prisma.deviceToken.findMany({
+      where: { tenantId, customerId },
       select: { token: true },
     });
     await this.send(rows.map((r) => r.token), title, body, 'announcements');

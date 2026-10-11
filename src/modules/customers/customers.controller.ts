@@ -90,6 +90,21 @@ export class CustomersController {
       dto.status,
     );
     this.realtime.emitCustomerUpdated(tenant.slug, customer);
+
+    // Let the customer know immediately — approval unlocks prices/orders
+    const statusText = {
+      APPROVED: 'Your account has been approved — you can now see prices and place orders',
+      REJECTED: 'Your account registration was declined',
+      BLOCKED: 'Your account has been blocked',
+    } as Record<string, string>;
+    if (statusText[dto.status]) {
+      await this.push.sendToCustomer(
+        tenant.id,
+        id,
+        'Account update',
+        statusText[dto.status],
+      );
+    }
     return customer;
   }
 }

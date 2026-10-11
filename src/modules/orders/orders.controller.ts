@@ -67,6 +67,24 @@ export class OrdersController {
   ) {
     const order = await this.ordersService.updateStatus(tenant.id, id, dto.status);
     this.realtime.emitOrderUpdated(tenant.slug, order);
+
+    // Notify the customer about their order's progress
+    if (order.customerId) {
+      const statusText = {
+        CONFIRMED: 'has been confirmed',
+        OUT_FOR_DELIVERY: 'is out for delivery',
+        COMPLETED: 'has been delivered',
+        CANCELLED: 'was cancelled',
+      } as Record<string, string>;
+      if (statusText[dto.status]) {
+        await this.push.sendToCustomer(
+          tenant.id,
+          order.customerId,
+          `Order ${order.orderNumber}`,
+          `Your order ${statusText[dto.status]}`,
+        );
+      }
+    }
     return order;
   }
 

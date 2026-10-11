@@ -3,6 +3,7 @@ import { ProductsService } from './products.service.js';
 import { TenantInterceptor } from '../../common/interceptors/tenant.interceptor.js';
 import { Tenant } from '../../common/decorators/tenant.decorator.js';
 import { RealtimeGateway } from '../../realtime/realtime.gateway.js';
+import { PushService } from '../../common/push/push.service.js';
 
 @Controller('products')
 @UseInterceptors(TenantInterceptor)
@@ -10,6 +11,7 @@ export class ProductsController {
   constructor(
     private productsService: ProductsService,
     private realtime: RealtimeGateway,
+    private push: PushService,
   ) {}
 
   @Get()
@@ -41,8 +43,26 @@ export class ProductsController {
 
   @Put(':id')
   async update(@Tenant() tenant: any, @Param('id') id: string, @Body() data: any, @Req() req: any) {
+    const before = await this.productsService.findOne(tenant.id, id).catch(() => null);
     const product = await this.productsService.update(tenant.id, id, data);
     this.realtime.emitProductUpdated(tenant.slug, product);
+
+    // Price change → notify all customer installs
+    const priceChanged =
+      before &&
+      (Number(before.price) !== Number(product.price) ||
+        JSON.stringify(before.priceTiers) !== JSON.stringify(product.priceTiers));
+    if (priceChanged) {
+      const cur = product.currency ?? 'AED';
+      const body = `${product.name} is now ${cur} ${Number(product.price).toFixed(2)}`;
+      this.realtime.emitNotificationBroadcast(tenant.slug, {
+        id: `${Date.now()}`,
+        title: 'Price update',
+        body,
+        createdAt: new Date(),
+      });
+      await this.push.sendToCustomers(tenant.id, 'Price update', body);
+    }
     return product;
   }
 
