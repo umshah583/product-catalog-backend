@@ -27,9 +27,12 @@ export class NotificationsController {
 
   // ---- Public (mobile app) — broadcast inbox ----
 
+  // Broadcasts are ephemeral — nothing is stored, so the inbox is
+  // always empty on (re)start. Notifications only live in the app's
+  // session state / OS tray.
   @Get()
-  findRecent(@Tenant() tenant: any) {
-    return this.notificationsService.findRecent(tenant.id);
+  findRecent() {
+    return [];
   }
 
   /**
@@ -51,19 +54,15 @@ export class NotificationsController {
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.CREATED)
   async broadcast(@Tenant() tenant: any, @Body() dto: BroadcastNotificationDto) {
-    const notification = await this.notificationsService.create(tenant.id, dto);
+    // No persistence — push + realtime only
     this.realtime.emitNotificationBroadcast(tenant.slug, {
-      id: notification.id,
-      title: notification.title,
-      body: notification.body,
-      createdAt: notification.createdAt,
+      id: `${Date.now()}`,
+      title: dto.title,
+      body: dto.body,
+      createdAt: new Date(),
     });
     // Reach killed/background apps via FCM
-    await this.push.sendToCustomers(
-      tenant.id,
-      notification.title,
-      notification.body,
-    );
-    return notification;
+    await this.push.sendToCustomers(tenant.id, dto.title, dto.body);
+    return { sent: true };
   }
 }
