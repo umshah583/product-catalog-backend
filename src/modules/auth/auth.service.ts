@@ -92,6 +92,16 @@ export class AuthService {
     return bcrypt.hash(password, 10);
   }
 
+  async listUsers(tenantId: string) {
+    return this.authRepository.findByTenant(tenantId);
+  }
+
+  async setUserActive(tenantId: string, userId: string, isActive: boolean) {
+    const result = await this.authRepository.updateActive(tenantId, userId, isActive);
+    if (result.count === 0) throw new UnauthorizedException('User not found');
+    return { id: userId, isActive };
+  }
+
   /**
    * Create a new user. Only callable by an authenticated admin.
    * The new user is assigned to the same tenant as the admin.

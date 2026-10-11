@@ -1,7 +1,10 @@
 import {
   Controller,
+  Get,
   Post,
+  Patch,
   Body,
+  Param,
   HttpCode,
   HttpStatus,
   UseGuards,
@@ -43,5 +46,23 @@ export class AuthController {
   @HttpCode(HttpStatus.CREATED)
   async register(@Body() registerDto: RegisterDto, @Req() req: any) {
     return this.authService.register(registerDto, req.user.tenantId);
+  }
+
+  /** List all users (salesmen + admins) in the current tenant. */
+  @Get('users')
+  @UseGuards(JwtAuthGuard)
+  async listUsers(@Req() req: any) {
+    return this.authService.listUsers(req.user.tenantId);
+  }
+
+  /** Activate/deactivate a user account. */
+  @Patch('users/:id/active')
+  @UseGuards(JwtAuthGuard)
+  async setUserActive(
+    @Param('id') id: string,
+    @Body('isActive') isActive: boolean,
+    @Req() req: any,
+  ) {
+    return this.authService.setUserActive(req.user.tenantId, id, isActive);
   }
 }

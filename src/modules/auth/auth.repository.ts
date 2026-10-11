@@ -20,6 +20,24 @@ export class AuthRepository {
     });
   }
 
+  async findByTenant(tenantId: string): Promise<Omit<User, 'password' | 'refreshToken'>[]> {
+    return this.prisma.user.findMany({
+      where: { tenantId },
+      orderBy: { createdAt: 'desc' },
+      select: {
+        id: true,
+        email: true,
+        firstName: true,
+        lastName: true,
+        role: true,
+        isActive: true,
+        tenantId: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
+  }
+
   async create(data: Prisma.UserCreateInput): Promise<User> {
     return this.prisma.user.create({
       data,
@@ -32,6 +50,13 @@ export class AuthRepository {
       where: { id },
       data: { refreshToken },
       include: { tenant: true },
+    });
+  }
+
+  async updateActive(tenantId: string, userId: string, isActive: boolean) {
+    return this.prisma.user.updateMany({
+      where: { id: userId, tenantId },
+      data: { isActive },
     });
   }
 
