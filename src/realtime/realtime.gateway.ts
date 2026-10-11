@@ -147,4 +147,8 @@ export class RealtimeGateway
   emitCustomerUpdated(tenantSlug: string, customer: unknown) {
     this.broadcast(tenantSlug, 'customer:updated', customer);
   }
+
+  emitNotificationBroadcast(tenantSlug: string, notification: unknown) {
+    this.broadcast(tenantSlug, 'notification:broadcast', notification);
+  }
 }
