@@ -143,7 +143,13 @@ export class PushService implements OnModuleInit {
       data: { title, body },
       android: {
         priority: 'high',
-        notification: { channelId, sound: 'default' },
+        notification: {
+          channelId,
+          sound: 'default',
+          defaultSound: true,
+          defaultVibrateTimings: true,
+          visibility: 'PUBLIC',
+        },
       },
     });
 
