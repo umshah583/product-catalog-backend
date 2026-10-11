@@ -124,6 +124,7 @@ model Product {
   stockStatus     StockStatus      @default(IN_STOCK)
   images          String[]
   colors          Json             @default("[]") // [{name, hex, inStock}]
+  priceTiers      Json             @default("[]") // [{minQty, price}] — bulk pricing
   specifications  Json?
   featured        Boolean          @default(false)
   isActive        Boolean          @default(true)
