@@ -82,10 +82,11 @@ export class PushService implements OnModuleInit {
     });
   }
 
-  /** Push to every customer device in the tenant (broadcast announcements). */
+  /** Push to every customer-app install in the tenant — broadcasts
+   *  reach devices whether or not a customer is logged in. */
   async sendToCustomers(tenantId: string, title: string, body: string) {
     const rows = await this.prisma.deviceToken.findMany({
-      where: { tenantId, customerId: { not: null } },
+      where: { tenantId, userId: null },
       select: { token: true },
     });
     await this.send(rows.map((r) => r.token), title, body, 'announcements');

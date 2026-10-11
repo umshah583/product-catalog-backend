@@ -32,6 +32,19 @@ export class NotificationsController {
     return this.notificationsService.findRecent(tenant.id);
   }
 
+  /**
+   * Register a device for broadcasts — public so push reaches every
+   * install, even before the customer logs in.
+   */
+  @Post('device-token')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async deviceToken(
+    @Tenant() tenant: any,
+    @Body() body: { token: string; platform?: string },
+  ) {
+    await this.push.registerToken(tenant.id, body.token, body.platform, {});
+  }
+
   // ---- Admin ----
 
   @Post('broadcast')
