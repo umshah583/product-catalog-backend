@@ -148,7 +148,7 @@ export class PushService implements OnModuleInit {
           sound: 'default',
           defaultSound: true,
           defaultVibrateTimings: true,
-          visibility: 'PUBLIC',
+          visibility: 'public',
         },
       },
     });
