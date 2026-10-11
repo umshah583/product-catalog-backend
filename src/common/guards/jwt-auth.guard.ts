@@ -28,6 +28,10 @@ export class JwtAuthGuard implements CanActivate {
       const payload = this.jwtService.verify(token, {
         secret: process.env.JWT_SECRET,
       });
+      // Customer tokens must not reach admin endpoints
+      if (payload.type === 'customer') {
+        throw new UnauthorizedException('Not an admin token');
+      }
       request.user = payload;
       return true;
     } catch {

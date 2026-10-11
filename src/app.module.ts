@@ -12,6 +12,7 @@ import { PromotionalOffersModule } from './modules/promotional-offers/promotiona
 import { OrdersModule } from './modules/orders/orders.module.js';
 import { DeliveryNotesModule } from './modules/delivery-notes/delivery-notes.module.js';
 import { CreditApplicationsModule } from './modules/credit-applications/credit-applications.module.js';
+import { CustomersModule } from './modules/customers/customers.module.js';
 import { RealtimeModule } from './realtime/realtime.module.js';
 
 @Module({
@@ -29,6 +30,7 @@ import { RealtimeModule } from './realtime/realtime.module.js';
     OrdersModule,
     DeliveryNotesModule,
     CreditApplicationsModule,
+    CustomersModule,
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService],

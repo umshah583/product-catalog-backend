@@ -26,6 +26,7 @@ model Tenant {
   orders      Order[]
   deliveryNotes DeliveryNote[]
   creditApplications CreditApplication[]
+  customers     Customer[]
 
   @@index([slug])
   @@index([isActive])
@@ -204,6 +205,8 @@ model Order {
 
   tenant        Tenant      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   items         OrderItem[]
+  customer      Customer?   @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  customerId    String?
 
   @@index([tenantId])
   @@index([status])
@@ -352,6 +355,32 @@ enum CreditAppStatus {
   DRAFT
   SUBMITTED
   UNDER_REVIEW
+  APPROVED
+  REJECTED
+}
+
+// Customers — mobile app accounts, gated by admin approval
+model Customer {
+  id        String         @id @default(cuid())
+  name      String?
+  email     String
+  phone     String
+  password  String
+  status    CustomerStatus @default(PENDING)
+  tenantId  String
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+
+  tenant    Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  orders    Order[]
+
+  @@unique([tenantId, email])
+  @@index([tenantId])
+  @@index([status])
+}
+
+enum CustomerStatus {
+  PENDING
   APPROVED
   REJECTED
 }

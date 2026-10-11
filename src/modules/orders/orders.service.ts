@@ -1,10 +1,14 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, ForbiddenException, NotFoundException } from '@nestjs/common';
 import { OrdersRepository } from './orders.repository.js';
 import { CreateOrderDto } from './dto/create-order.dto.js';
+import { PrismaService } from '../../common/prisma/prisma.service.js';
 
 @Injectable()
 export class OrdersService {
-  constructor(private ordersRepository: OrdersRepository) {}
+  constructor(
+    private ordersRepository: OrdersRepository,
+    private prisma: PrismaService,
+  ) {}
 
   private generateOrderNumber(): string {
     const ts = Date.now().toString().slice(-8);
@@ -13,6 +17,17 @@ export class OrdersService {
   }
 
   async create(tenantId: string, dto: CreateOrderDto) {
+    // Orders placed by a registered customer require an approved account
+    if (dto.customerId) {
+      const customer = await this.prisma.customer.findFirst({
+        where: { id: dto.customerId, tenantId },
+        select: { status: true },
+      });
+      if (!customer) throw new NotFoundException('Customer not found');
+      if (customer.status !== 'APPROVED') {
+        throw new ForbiddenException('Account pending approval');
+      }
+    }
     return this.ordersRepository.create(tenantId, this.generateOrderNumber(), dto);
   }
 

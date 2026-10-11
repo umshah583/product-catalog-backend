@@ -66,6 +66,10 @@ export class CreateOrderDto {
   @IsString()
   notes?: string;
 
+  @IsOptional()
+  @IsString()
+  customerId?: string;
+
   @IsNumber()
   @Min(0)
   totalAmount!: number;

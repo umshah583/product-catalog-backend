@@ -143,4 +143,8 @@ export class RealtimeGateway
   emitCreditApplicationUpdated(tenantSlug: string, app: unknown) {
     this.broadcast(tenantSlug, 'credit-application:updated', app);
   }
+
+  emitCustomerUpdated(tenantSlug: string, customer: unknown) {
+    this.broadcast(tenantSlug, 'customer:updated', customer);
+  }
 }

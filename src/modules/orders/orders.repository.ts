@@ -17,6 +17,7 @@ export class OrdersRepository {
         customerEmail: dto.customerEmail ?? null,
         customerAddress: dto.customerAddress ?? null,
         notes: dto.notes ?? null,
+        customer: dto.customerId ? { connect: { id: dto.customerId } } : undefined,
         totalAmount: dto.totalAmount,
         currency: dto.currency ?? 'USD',
         itemCount,
