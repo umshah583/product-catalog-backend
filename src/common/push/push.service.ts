@@ -1,6 +1,8 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { initializeApp, cert, getApps } from 'firebase-admin/app';
 import { getMessaging } from 'firebase-admin/messaging';
+import { existsSync, readFileSync } from 'fs';
+import { join } from 'path';
 import { PrismaService } from '../prisma/prisma.service.js';
 
 /**
@@ -18,14 +20,13 @@ export class PushService implements OnModuleInit {
   constructor(private prisma: PrismaService) {}
 
   onModuleInit() {
-    const creds = process.env.FCM_SERVICE_ACCOUNT_JSON;
+    const creds = this.loadCredentials();
     if (!creds) {
-      this.logger.warn('FCM_SERVICE_ACCOUNT_JSON not set — push notifications disabled');
+      this.logger.warn('FCM credentials not set — push notifications disabled');
       return;
     }
     try {
-      const json = Buffer.from(creds, 'base64').toString('utf8');
-      const parsed = JSON.parse(creds.startsWith('{') ? creds : json);
+      const parsed = JSON.parse(creds);
       if (getApps().length === 0) {
         initializeApp({ credential: cert(parsed) });
       }
@@ -34,6 +35,26 @@ export class PushService implements OnModuleInit {
     } catch (e) {
       this.logger.error(`Firebase init failed: ${e}`);
     }
+  }
+
+  /**
+   * Resolution order:
+   *  1. FCM_SERVICE_ACCOUNT_JSON env var (raw or base64 JSON)
+   *  2. firebase-service-account.json in the backend root
+   */
+  private loadCredentials(): string | null {
+    const envJson = process.env.FCM_SERVICE_ACCOUNT_JSON;
+    if (envJson) {
+      return envJson.startsWith('{')
+        ? envJson
+        : Buffer.from(envJson, 'base64').toString('utf8');
+    }
+    const file = join(process.cwd(), 'firebase-service-account.json');
+    if (existsSync(file)) {
+      this.logger.log('Loading FCM credentials from firebase-service-account.json');
+      return readFileSync(file, 'utf8');
+    }
+    return null;
   }
 
   /** Register/refresh a device token for a customer or a portal user. */
