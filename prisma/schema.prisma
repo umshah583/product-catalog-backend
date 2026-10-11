@@ -406,6 +406,7 @@ enum CustomerStatus {
 enum OrderStatus {
   PENDING
   CONFIRMED
+  OUT_FOR_DELIVERY
   COMPLETED
   CANCELLED
 }
