@@ -60,11 +60,17 @@ export class ProductsController {
           ? (product.priceTiers as any[])
           : [];
         const bestTier = tiers.length
-          ? Math.min(...tiers.map((t) => Number(t.price ?? Infinity)))
+          ? tiers.reduce((a, b) =>
+              Number(a.price ?? Infinity) <= Number(b.price ?? Infinity)
+                ? a
+                : b,
+            )
           : null;
+        const tierPrice = bestTier ? Number(bestTier.price) : null;
+        const tierQty = bestTier?.minQty ? Number(bestTier.minQty) : null;
         const body = tiersChanged
-          ? bestTier && bestTier < Number(product.price)
-            ? `${product.name} — ${base}, from ${cur} ${bestTier.toFixed(2)} in bulk`
+          ? tierPrice && tierPrice < Number(product.price)
+            ? `${product.name} — ${base}, ${cur} ${tierPrice.toFixed(2)} each for ${tierQty}+ pcs`
             : `${product.name} — bulk pricing updated`
           : `${product.name} is now ${base}`;
         this.realtime.emitNotificationBroadcast(tenant.slug, {
