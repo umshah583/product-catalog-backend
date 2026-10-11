@@ -126,7 +126,7 @@ export class PushService implements OnModuleInit {
       where: { tenantId, userId: { not: null } },
       select: { token: true },
     });
-    await this.send(rows.map((r) => r.token), title, body, 'orders_v2');
+    await this.send(rows.map((r) => r.token), title, body, 'orders_v3');
   }
 
   private async send(
