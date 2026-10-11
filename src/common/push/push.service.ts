@@ -93,7 +93,7 @@ export class PushService implements OnModuleInit {
       where: { tenantId, userId: null },
       select: { token: true },
     });
-    await this.send(rows.map((r) => r.token), title, body, 'announcements');
+    await this.send(rows.map((r) => r.token), title, body, 'announcements_v2');
   }
 
   /** Push to one customer's devices — order updates, account status. */
@@ -107,7 +107,7 @@ export class PushService implements OnModuleInit {
       where: { tenantId, customerId },
       select: { token: true },
     });
-    await this.send(rows.map((r) => r.token), title, body, 'announcements');
+    await this.send(rows.map((r) => r.token), title, body, 'announcements_v2');
   }
 
   /** Store display currency from Settings — product/order records
@@ -126,7 +126,7 @@ export class PushService implements OnModuleInit {
       where: { tenantId, userId: { not: null } },
       select: { token: true },
     });
-    await this.send(rows.map((r) => r.token), title, body, 'orders');
+    await this.send(rows.map((r) => r.token), title, body, 'orders_v2');
   }
 
   private async send(
