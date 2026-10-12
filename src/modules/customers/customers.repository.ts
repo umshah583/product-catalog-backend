@@ -7,6 +7,8 @@ const CUSTOMER_SELECT = {
   email: true,
   phone: true,
   status: true,
+  latitude: true,
+  longitude: true,
   tenantId: true,
   createdAt: true,
 } as const;
@@ -34,6 +36,8 @@ export class CustomersRepository {
     phone: string;
     password: string;
     name?: string;
+    latitude?: number | null;
+    longitude?: number | null;
   }) {
     return this.prisma.customer.create({
       data: {
@@ -41,6 +45,8 @@ export class CustomersRepository {
         phone: data.phone,
         password: data.password,
         name: data.name ?? null,
+        latitude: data.latitude ?? null,
+        longitude: data.longitude ?? null,
         tenant: { connect: { id: data.tenantId } },
       },
       select: CUSTOMER_SELECT,

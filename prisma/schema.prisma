@@ -373,6 +373,8 @@ model Customer {
   phone     String
   password  String
   status    CustomerStatus @default(PENDING)
+  latitude  Float?
+  longitude Float?
   tenantId  String
   createdAt DateTime       @default(now())
   updatedAt DateTime       @updatedAt

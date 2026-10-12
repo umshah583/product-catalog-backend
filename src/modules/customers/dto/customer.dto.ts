@@ -2,8 +2,11 @@ import {
   IsEmail,
   IsIn,
   IsNotEmpty,
+  IsNumber,
   IsOptional,
   IsString,
+  Min,
+  Max,
   MinLength,
 } from 'class-validator';
 
@@ -22,6 +25,19 @@ export class CustomerRegisterDto {
   @IsOptional()
   @IsString()
   name?: string;
+
+  // Device GPS at registration — used for delivery
+  @IsOptional()
+  @IsNumber()
+  @Min(-90)
+  @Max(90)
+  latitude?: number;
+
+  @IsOptional()
+  @IsNumber()
+  @Min(-180)
+  @Max(180)
+  longitude?: number;
 }
 
 export class CustomerLoginDto {

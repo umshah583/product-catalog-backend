@@ -32,6 +32,8 @@ export class CustomersService {
       phone: dto.phone,
       password: await bcrypt.hash(dto.password, 10),
       name: dto.name,
+      latitude: dto.latitude ?? null,
+      longitude: dto.longitude ?? null,
     });
 
     return { customer, message: 'Account created — pending admin approval' };
