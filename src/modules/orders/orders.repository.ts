@@ -53,6 +53,14 @@ export class OrdersRepository {
     });
   }
 
+  async findByCustomer(tenantId: string, customerId: string) {
+    return this.prisma.order.findMany({
+      where: { tenantId, customerId },
+      include: { items: true },
+      orderBy: { createdAt: 'desc' },
+    });
+  }
+
   async findById(tenantId: string, id: string) {
     return this.prisma.order.findFirst({
       where: { id, tenantId },

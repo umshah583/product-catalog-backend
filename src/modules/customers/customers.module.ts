@@ -5,6 +5,7 @@ import { CustomersService } from './customers.service.js';
 import { CustomersRepository } from './customers.repository.js';
 import { PrismaService } from '../../common/prisma/prisma.service.js';
 import { RealtimeModule } from '../../realtime/realtime.module.js';
+import { OrdersModule } from '../orders/orders.module.js';
 
 @Module({
   controllers: [CustomersController],
@@ -12,6 +13,7 @@ import { RealtimeModule } from '../../realtime/realtime.module.js';
   imports: [
     JwtModule.register({}),
     RealtimeModule,
+    OrdersModule,
   ],
   exports: [CustomersService],
 })

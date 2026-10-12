@@ -12,6 +12,7 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { CustomersService } from './customers.service.js';
+import { OrdersService } from '../orders/orders.service.js';
 import {
   CustomerLoginDto,
   CustomerRegisterDto,
@@ -31,6 +32,7 @@ export class CustomersController {
     private customersService: CustomersService,
     private realtime: RealtimeGateway,
     private push: PushService,
+    private ordersService: OrdersService,
   ) {}
 
   // ---- Public (mobile app) ----
@@ -67,6 +69,12 @@ export class CustomersController {
   @UseGuards(CustomerAuthGuard)
   me(@Tenant() tenant: any, @Req() req: any) {
     return this.customersService.me(tenant.id, req.customer.sub);
+  }
+
+  @Get('me/orders')
+  @UseGuards(CustomerAuthGuard)
+  myOrders(@Tenant() tenant: any, @Req() req: any) {
+    return this.ordersService.findByCustomer(tenant.id, req.customer.sub);
   }
 
   // ---- Admin ----

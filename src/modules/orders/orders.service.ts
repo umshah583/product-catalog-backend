@@ -114,6 +114,10 @@ export class OrdersService {
     return this.ordersRepository.findAll(tenantId, status);
   }
 
+  async findByCustomer(tenantId: string, customerId: string) {
+    return this.ordersRepository.findByCustomer(tenantId, customerId);
+  }
+
   async findById(tenantId: string, id: string) {
     const order = await this.ordersRepository.findById(tenantId, id);
     if (!order) throw new NotFoundException('Order not found');
