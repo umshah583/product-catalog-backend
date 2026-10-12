@@ -68,6 +68,14 @@ export class CreateOrderDto {
   customerAddress?: string;
 
   @IsOptional()
+  @IsNumber()
+  latitude?: number;
+
+  @IsOptional()
+  @IsNumber()
+  longitude?: number;
+
+  @IsOptional()
   @IsString()
   notes?: string;
 

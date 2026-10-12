@@ -16,6 +16,8 @@ export class OrdersRepository {
         customerPhone: dto.customerPhone,
         customerEmail: dto.customerEmail ?? null,
         customerAddress: dto.customerAddress ?? null,
+        latitude: dto.latitude ?? null,
+        longitude: dto.longitude ?? null,
         notes: dto.notes ?? null,
         customer: dto.customerId ? { connect: { id: dto.customerId } } : undefined,
         totalAmount: dto.totalAmount,
