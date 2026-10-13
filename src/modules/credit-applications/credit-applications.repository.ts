@@ -110,6 +110,18 @@ export class CreditApplicationsRepository {
     return this.prisma.creditApplication.count({ where: { tenantId } });
   }
 
+  /** Highest CA-XXXXXX suffix issued — survives deletes unlike a count. */
+  async latestAppNumber(tenantId: string): Promise<number> {
+    const last = await this.prisma.creditApplication.findFirst({
+      where: { tenantId, appNumber: { startsWith: 'CA-' } },
+      orderBy: { appNumber: 'desc' },
+      select: { appNumber: true },
+    });
+    if (!last) return 0;
+    const n = parseInt(last.appNumber.slice(3), 10);
+    return Number.isNaN(n) ? 0 : n;
+  }
+
   async upsertDocument(applicationId: string, dto: UpsertDocumentDto) {
     // One document record per docType — replace if re-uploaded
     await this.prisma.creditAppDocument.deleteMany({

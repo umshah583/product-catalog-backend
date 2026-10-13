@@ -27,15 +27,24 @@ export class CreditApplicationsService {
   ) {}
 
   private async generateNumber(tenantId: string): Promise<string> {
-    const count = await this.repo.countForTenant(tenantId);
-    return `CA-${String(count + 1).padStart(6, '0')}`;
+    const latest = await this.repo.latestAppNumber(tenantId);
+    return `CA-${String(latest + 1).padStart(6, '0')}`;
   }
 
   async create(tenantId: string, dto: CreateCreditApplicationDto) {
-    const appNumber = await this.generateNumber(tenantId);
-    const app = await this.repo.create(tenantId, appNumber, dto);
-    await this.repo.audit(app.id, 'CREATED', 'Application created', null);
-    return app;
+    // Retry on unique-collision — two concurrent creates can race for
+    // the same next number.
+    for (let attempt = 0; attempt < 3; attempt++) {
+      const appNumber = await this.generateNumber(tenantId);
+      try {
+        const app = await this.repo.create(tenantId, appNumber, dto);
+        await this.repo.audit(app.id, 'CREATED', 'Application created', null);
+        return app;
+      } catch (e: any) {
+        if (e?.code !== 'P2002' || attempt === 2) throw e;
+      }
+    }
+    throw new Error('unreachable');
   }
 
   async findAll(tenantId: string, status?: string) {
