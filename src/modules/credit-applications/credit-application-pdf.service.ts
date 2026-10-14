@@ -36,19 +36,20 @@ interface FieldMap {
  */
 @Injectable()
 export class CreditApplicationPdfService {
-  private map: FieldMap | null = null;
+  private maps = new Map<string, FieldMap>();
 
-  private getMap(): FieldMap {
-    if (!this.map) {
+  private getMap(formType?: string): FieldMap {
+    const key = formType === 'VAT_RCM' ? 'vat-rcm-v1' : 'credit-application-v1';
+    if (!this.maps.has(key)) {
       const mapPath = path.join(
         process.cwd(),
         'assets',
         'templates',
-        'credit-application-v1.map.json',
+        `${key}.map.json`,
       );
-      this.map = JSON.parse(fs.readFileSync(mapPath, 'utf-8'));
+      this.maps.set(key, JSON.parse(fs.readFileSync(mapPath, 'utf-8')));
     }
-    return this.map!;
+    return this.maps.get(key)!;
   }
 
   private ty(pageHeight: number, y: number): number {
@@ -57,6 +58,7 @@ export class CreditApplicationPdfService {
 
   async generate(application: {
     formData: any;
+    formType?: string | null;
     customerName: string;
     customerTrn?: string | null;
     signatureData?: string | null;
@@ -64,7 +66,7 @@ export class CreditApplicationPdfService {
     initials?: string | null;
     appNumber: string;
   }): Promise<Uint8Array> {
-    const map = this.getMap();
+    const map = this.getMap(application.formType ?? undefined);
     const templatePath = path.join(
       process.cwd(),
       'assets',
@@ -260,6 +262,33 @@ export class CreditApplicationPdfService {
         }
       });
     };
+
+    if (application.formType === 'VAT_RCM') {
+      // ---- VAT RCM declaration (2 pages) ----
+      const vDate = data.date ? new Date(data.date) : new Date();
+      text('p1.date', vDate.toLocaleDateString('en-GB'));
+      text('p1.from1', data.from1 ?? '');
+      text('p1.from2', data.from2 ?? '');
+      text('p1.declarantName', data.declarantName ?? '', true);
+      text('p1.eid', data.eid ?? '');
+      text('p1.onBehalf', data.onBehalf ?? data.companyName ?? application.customerName);
+      if (String(data.purpose ?? '') === 'RESALE') check('p1.purpose.resale');
+      if (String(data.purpose ?? '') === 'PRODUCE') check('p1.purpose.produce');
+      text('p1.trn', data.trn ?? application.customerTrn ?? '');
+      text('p1.companyName', data.companyName ?? application.customerName);
+      text('p1.address', data.address ?? '');
+      text('p1.liableMs', data.liableMs ?? data.companyName ?? application.customerName);
+      if (String(data.authority ?? '') === 'SIGNATORY') check('p2.auth.signatory');
+      if (String(data.authority ?? '') === 'POA') check('p2.auth.poa');
+      if (sigImg && f['p2.signature'])
+        drawImageFit(1, sigImg, f['p2.signature'].x!, f['p2.signature'].y!, f['p2.signature'].w!, f['p2.signature'].h!);
+      text('p2.name', data.signerName ?? '', true);
+      text('p2.designation', data.designation ?? '');
+      text('p2.contactNo', data.contactNo ?? '');
+      if (stampImg && f['p2.stamp'])
+        drawImageFit(1, stampImg, f['p2.stamp'].x!, f['p2.stamp'].y!, f['p2.stamp'].w!, f['p2.stamp'].h!);
+      return doc.save();
+    }
 
     // ---- Page 1: cover ----
     const appDate = data.appDate ? new Date(data.appDate) : new Date();

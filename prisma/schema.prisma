@@ -302,6 +302,7 @@ enum DeliveryNoteStatus {
 model CreditApplication {
   id              String   @id @default(cuid())
   appNumber       String
+  formType        String   @default("CREDIT_APP")
   customerName    String
   customerPhone   String?
   customerEmail   String?

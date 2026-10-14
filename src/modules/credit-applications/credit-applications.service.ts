@@ -26,16 +26,17 @@ export class CreditApplicationsService {
     private pdf: CreditApplicationPdfService,
   ) {}
 
-  private async generateNumber(tenantId: string): Promise<string> {
-    const latest = await this.repo.latestAppNumber(tenantId);
-    return `CA-${String(latest + 1).padStart(6, '0')}`;
+  private async generateNumber(tenantId: string, formType?: string): Promise<string> {
+    const prefix = formType === 'VAT_RCM' ? 'VR-' : 'CA-';
+    const latest = await this.repo.latestAppNumber(tenantId, prefix);
+    return `${prefix}${String(latest + 1).padStart(6, '0')}`;
   }
 
   async create(tenantId: string, dto: CreateCreditApplicationDto) {
     // Retry on unique-collision — two concurrent creates can race for
     // the same next number.
     for (let attempt = 0; attempt < 3; attempt++) {
-      const appNumber = await this.generateNumber(tenantId);
+      const appNumber = await this.generateNumber(tenantId, dto.formType);
       try {
         const app = await this.repo.create(tenantId, appNumber, dto);
         await this.repo.audit(app.id, 'CREATED', 'Application created', null);
@@ -47,8 +48,8 @@ export class CreditApplicationsService {
     throw new Error('unreachable');
   }
 
-  async findAll(tenantId: string, status?: string) {
-    return this.repo.findAll(tenantId, status);
+  async findAll(tenantId: string, status?: string, formType?: string) {
+    return this.repo.findAll(tenantId, status, formType);
   }
 
   async findById(tenantId: string, id: string) {
@@ -128,6 +129,7 @@ export class CreditApplicationsService {
     const app = await this.findById(tenantId, id);
     const pdfBytes = await this.pdf.generate({
       formData: app.formData,
+      formType: app.formType,
       customerName: app.customerName,
       customerTrn: app.customerTrn,
       signatureData: app.signatureData,

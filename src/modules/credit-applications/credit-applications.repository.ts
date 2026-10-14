@@ -31,17 +31,19 @@ export class CreditApplicationsRepository {
         signatureData: dto.signatureData ?? null,
         stampData: dto.stampData ?? null,
         initials: dto.initials ?? null,
+        formType: dto.formType ?? 'CREDIT_APP',
         tenant: { connect: { id: tenantId } },
       },
       include: this.detailInclude,
     });
   }
 
-  async findAll(tenantId: string, status?: string) {
+  async findAll(tenantId: string, status?: string, formType?: string) {
     return this.prisma.creditApplication.findMany({
       where: {
         tenantId,
         ...(status ? { status: status as any } : {}),
+        ...(formType ? { formType } : {}),
       },
       include: { documents: true },
       orderBy: { createdAt: 'desc' },
@@ -110,15 +112,15 @@ export class CreditApplicationsRepository {
     return this.prisma.creditApplication.count({ where: { tenantId } });
   }
 
-  /** Highest CA-XXXXXX suffix issued — survives deletes unlike a count. */
-  async latestAppNumber(tenantId: string): Promise<number> {
+  /** Highest XX-NNNNNN suffix issued for a prefix — survives deletes. */
+  async latestAppNumber(tenantId: string, prefix = 'CA-'): Promise<number> {
     const last = await this.prisma.creditApplication.findFirst({
-      where: { tenantId, appNumber: { startsWith: 'CA-' } },
+      where: { tenantId, appNumber: { startsWith: prefix } },
       orderBy: { appNumber: 'desc' },
       select: { appNumber: true },
     });
     if (!last) return 0;
-    const n = parseInt(last.appNumber.slice(3), 10);
+    const n = parseInt(last.appNumber.slice(prefix.length), 10);
     return Number.isNaN(n) ? 0 : n;
   }
 

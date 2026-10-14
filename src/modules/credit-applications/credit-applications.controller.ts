@@ -36,8 +36,12 @@ export class CreditApplicationsController {
   ) {}
 
   @Get()
-  async findAll(@Tenant() tenant: any, @Query('status') status?: string) {
-    return this.service.findAll(tenant.id, status);
+  async findAll(
+    @Tenant() tenant: any,
+    @Query('status') status?: string,
+    @Query('type') formType?: string,
+  ) {
+    return this.service.findAll(tenant.id, status, formType);
   }
 
   @Get(':id')

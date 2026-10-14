@@ -40,6 +40,12 @@ export class CreateCreditApplicationDto {
   @IsString()
   @IsOptional()
   initials?: string;
+
+  /** Which PDF form this is — CREDIT_APP (default) or VAT_RCM. */
+  @IsString()
+  @IsOptional()
+  @IsIn(['CREDIT_APP', 'VAT_RCM'])
+  formType?: string;
 }
 
 export class UpdateCreditApplicationDto {
