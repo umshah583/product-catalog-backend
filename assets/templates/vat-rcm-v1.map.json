@@ -36,24 +36,24 @@
       "type": "text",
       "x": 57,
       "y": 311,
-      "size": 10,
-      "maxWidth": 230
+      "size": 8,
+      "maxWidth": 140
     },
     "p1.eid": {
       "page": 0,
       "type": "text",
-      "x": 340,
+      "x": 335,
       "y": 311,
-      "size": 10,
-      "maxWidth": 185
+      "size": 8,
+      "maxWidth": 120
     },
     "p1.onBehalf": {
       "page": 0,
       "type": "text",
       "x": 160,
-      "y": 333,
-      "size": 10,
-      "maxWidth": 410
+      "y": 326,
+      "size": 9,
+      "maxWidth": 290
     },
     "p1.purpose.resale": {
       "page": 0,
@@ -94,10 +94,10 @@
     "p1.liableMs": {
       "page": 0,
       "type": "text",
-      "x": 290,
+      "x": 292,
       "y": 668,
-      "size": 10,
-      "maxWidth": 285
+      "size": 9,
+      "maxWidth": 255
     },
     "p2.auth.signatory": {
       "page": 1,
