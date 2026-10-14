@@ -58,14 +58,14 @@
     "p1.purpose.resale": {
       "page": 0,
       "type": "checkbox",
-      "x": 61,
-      "y": 434
+      "x": 63,
+      "y": 422
     },
     "p1.purpose.produce": {
       "page": 0,
       "type": "checkbox",
-      "x": 61,
-      "y": 451
+      "x": 63,
+      "y": 438
     },
     "p1.trn": {
       "page": 0,
@@ -102,14 +102,14 @@
     "p2.auth.signatory": {
       "page": 1,
       "type": "checkbox",
-      "x": 62,
-      "y": 340
+      "x": 75,
+      "y": 345
     },
     "p2.auth.poa": {
       "page": 1,
       "type": "checkbox",
-      "x": 62,
-      "y": 359
+      "x": 75,
+      "y": 361
     },
     "p2.signature": {
       "page": 1,
