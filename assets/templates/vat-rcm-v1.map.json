@@ -19,137 +19,137 @@
       "page": 0,
       "type": "text",
       "x": 45,
-      "y": 251,
+      "y": 244,
       "size": 10,
-      "maxWidth": 210
+      "maxWidth": 205
     },
     "p1.from2": {
       "page": 0,
       "type": "text",
       "x": 45,
-      "y": 272,
+      "y": 265,
       "size": 10,
-      "maxWidth": 210
+      "maxWidth": 205
     },
     "p1.declarantName": {
       "page": 0,
       "type": "text",
       "x": 57,
-      "y": 311,
-      "size": 8,
-      "maxWidth": 140
+      "y": 308,
+      "size": 9,
+      "maxWidth": 132
     },
     "p1.eid": {
       "page": 0,
       "type": "text",
-      "x": 335,
-      "y": 311,
-      "size": 8,
-      "maxWidth": 120
+      "x": 267,
+      "y": 308,
+      "size": 9,
+      "maxWidth": 100
     },
     "p1.onBehalf": {
       "page": 0,
       "type": "text",
-      "x": 160,
-      "y": 326,
+      "x": 155,
+      "y": 321,
       "size": 9,
-      "maxWidth": 290
+      "maxWidth": 305
     },
     "p1.purpose.resale": {
       "page": 0,
       "type": "checkbox",
-      "x": 63,
-      "y": 422
+      "x": 52,
+      "y": 423
     },
     "p1.purpose.produce": {
       "page": 0,
       "type": "checkbox",
-      "x": 63,
-      "y": 438
+      "x": 52,
+      "y": 436
     },
     "p1.trn": {
       "page": 0,
       "type": "text",
-      "x": 245,
-      "y": 548,
+      "x": 200,
+      "y": 542,
       "size": 10,
-      "maxWidth": 320
+      "maxWidth": 360
     },
     "p1.companyName": {
       "page": 0,
       "type": "text",
-      "x": 245,
-      "y": 575,
+      "x": 200,
+      "y": 563,
       "size": 10,
-      "maxWidth": 320
+      "maxWidth": 360
     },
     "p1.address": {
       "page": 0,
       "type": "text",
-      "x": 245,
-      "y": 595,
+      "x": 200,
+      "y": 583,
       "size": 10,
-      "maxWidth": 320
+      "maxWidth": 360
     },
     "p1.liableMs": {
       "page": 0,
       "type": "text",
-      "x": 292,
-      "y": 668,
+      "x": 262,
+      "y": 662,
       "size": 9,
-      "maxWidth": 255
+      "maxWidth": 272
     },
     "p2.auth.signatory": {
       "page": 1,
       "type": "checkbox",
-      "x": 75,
-      "y": 345
+      "x": 48,
+      "y": 338
     },
     "p2.auth.poa": {
       "page": 1,
       "type": "checkbox",
-      "x": 75,
-      "y": 361
+      "x": 48,
+      "y": 356
     },
     "p2.signature": {
       "page": 1,
       "type": "image",
-      "x": 145,
-      "y": 505,
-      "w": 130,
-      "h": 38
+      "x": 125,
+      "y": 510,
+      "w": 120,
+      "h": 30
     },
     "p2.name": {
       "page": 1,
       "type": "text",
-      "x": 145,
-      "y": 545,
+      "x": 125,
+      "y": 551,
       "size": 10,
-      "maxWidth": 300
+      "maxWidth": 320
     },
     "p2.designation": {
       "page": 1,
       "type": "text",
-      "x": 145,
-      "y": 570,
+      "x": 125,
+      "y": 572,
       "size": 10,
-      "maxWidth": 300
+      "maxWidth": 320
     },
     "p2.contactNo": {
       "page": 1,
       "type": "text",
-      "x": 145,
-      "y": 600,
+      "x": 125,
+      "y": 592,
       "size": 10,
-      "maxWidth": 300
+      "maxWidth": 320
     },
     "p2.stamp": {
       "page": 1,
       "type": "image",
-      "x": 145,
-      "y": 540,
-      "w": 150,
-      "h": 75
+      "x": 120,
+      "y": 622,
+      "w": 110,
+      "h": 65
     }
   }
 }
